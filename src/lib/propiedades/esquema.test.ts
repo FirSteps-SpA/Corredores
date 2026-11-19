@@ -111,6 +111,16 @@ describe("leerPropiedad", () => {
     expect(r.valores).toMatchObject({ titulo: "Casa en Cavancha", sector: "Cavancha", dormitorios: "-1" });
   });
 
+  it("ubicación: ambas coordenadas o ninguna, en rango", () => {
+    const r = leer({ lat: "-20.2425", lng: "-70.141" });
+    expect(r.ok && [r.datos.lat, r.datos.lng]).toEqual([-20.2425, -70.141]);
+    const sin = leer({ lat: "", lng: "" });
+    expect(sin.ok && [sin.datos.lat, sin.datos.lng]).toEqual([null, null]);
+    expect(error({ lat: "-20.2", lng: "" }, "ubicacion")).toBe("La ubicación está incompleta.");
+    expect(error({ lat: "-120", lng: "-70" }, "ubicacion")).toBe("Ubicación inválida.");
+    expect(error({ lat: "abc", lng: "-70" }, "ubicacion")).toBe("Ubicación inválida.");
+  });
+
   it("textos vacíos opcionales quedan en null y se recortan", () => {
     const r = leer({ codigo: "  GC-12 ", sector: "   " });
     expect(r.ok && [r.datos.codigo, r.datos.sector]).toEqual(["GC-12", null]);

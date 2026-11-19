@@ -7,6 +7,7 @@ import { CARACTERISTICAS, COMUNAS, ESTADOS, MONEDAS, OPERACIONES, TIPOS } from "
 import { slugDe } from "@/lib/propiedades/slug";
 import { Enviar } from "../../campos";
 import { guardarPropiedad, type EstadoFormulario } from "./acciones";
+import { MapaSelector } from "./mapa-selector";
 
 type Props = {
   id?: string;
@@ -100,8 +101,9 @@ export function FormularioPropiedad({ id, inicial, original }: Props) {
           etiqueta="Mostrar la dirección exacta en el sitio"
           name="mostrar_direccion"
           defaultChecked={v("mostrar_direccion") === "on"}
-          ayuda="Si no, solo se muestran el sector y la comuna."
+          ayuda="Si no, el sitio muestra solo sector y comuna, y en el mapa una zona aproximada."
         />
+        <MapaSelector lat={v("lat")} lng={v("lng")} error={e.ubicacion} />
       </Seccion>
 
       <Seccion titulo="Características">

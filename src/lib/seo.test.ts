@@ -6,6 +6,7 @@ const ficha = {
   precio: 5200, moneda: "UF", sector: "Cavancha", comuna: "Iquique", region: "Tarapacá",
   direccion: "Calle Secreta 123", mostrar_direccion: false, dormitorios: 3, banos: 2, m2_utiles: 80,
   m2_totales: null, estado: "publicada", created_at: "2026-11-19T00:00:00Z", fotos: [{ path: "id/a.jpg" }],
+  lat: -20.2428, lng: -70.1389,
 };
 
 describe("descripcionFicha", () => {
@@ -31,10 +32,12 @@ describe("JSON-LD", () => {
     expect(j.offers).toMatchObject({ price: 5200, priceCurrency: "CLF", availability: "https://schema.org/InStock" });
     expect(JSON.stringify(j)).not.toContain("Calle Secreta");
     expect(j.about).toMatchObject({ numberOfRooms: 3, numberOfBathroomsTotal: 2 });
+    expect(j.about).not.toHaveProperty("geo");
   });
   it("ficha con dirección permitida, vendida y en pesos", () => {
     const j = jsonLdFicha({ ...ficha, mostrar_direccion: true, estado: "vendida", moneda: "CLP" });
     expect(j.about.address).toMatchObject({ streetAddress: "Calle Secreta 123" });
+    expect(j.about).toMatchObject({ geo: { latitude: -20.2428, longitude: -70.1389 } });
     expect(j.offers).toMatchObject({ priceCurrency: "CLP", availability: "https://schema.org/SoldOut" });
   });
   it("corredora sin teléfono ni Instagram no los inventa", () => {

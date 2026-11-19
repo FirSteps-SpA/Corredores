@@ -39,8 +39,17 @@ if (remoto === esLocal) {
   process.exit(2);
 }
 
+// Distancia en metros entre dos puntos { lat, lng } (haversine).
+function distancia(a, b) {
+  const rad = (x) => (x * Math.PI) / 180;
+  const dLat = rad(b.lat - a.lat);
+  const dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371000 * Math.asin(Math.sqrt(h));
+}
+
 // `raw` envía el cuerpo tal cual (archivos de Storage) con su `contentType`.
-async function http(method, path, { key = PUB, token, body, raw, contentType, prefer } = {}) {
+async function http(method, path, { key = PUB, token, body, raw, contentType, prefer, headers = {} } = {}) {
   const res = await fetch(API + path, {
     method,
     headers: {
@@ -48,6 +57,7 @@ async function http(method, path, { key = PUB, token, body, raw, contentType, pr
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       "Content-Type": raw === undefined ? "application/json" : contentType,
       ...(prefer ? { Prefer: prefer } : {}),
+      ...headers,
     },
     body: raw ?? (body === undefined ? undefined : JSON.stringify(body)),
   });
@@ -298,6 +308,38 @@ async function catalogo() {
     r = await borrar(admin.token, ruta);
     check("el admin borra la foto", r.status === 200 && r.data?.length === 1, `HTTP ${r.status}`);
     check("la foto borrada deja de estar disponible", (await publica(ruta)) >= 400);
+
+    // Ubicación privada (spec 8): la dirección y las coordenadas exactas ocultas no salen por la API
+    console.log("\n-- Ubicación privada");
+    const exacta = { lat: -20.2425, lng: -70.1412 };
+    r = await http("POST", "/rest/v1/propiedades", {
+      ...SVC,
+      prefer: REP,
+      body: [
+        propiedad("oculta", { estado: "publicada", direccion: "Calle Secreta 123", mostrar_direccion: false, ...exacta }),
+        propiedad("visible", { estado: "publicada", direccion: "Avenida Visible 456", mostrar_direccion: true, ...exacta }),
+      ],
+    });
+    const [oculta, visible] = r.data ?? [];
+    r = await http("GET", `/rest/v1/propiedades?select=direccion,lat,lng&id=eq.${oculta.id}`);
+    check("anon no puede leer dirección ni coordenadas de la tabla", r.status >= 400, `HTTP ${r.status} ${r.data?.code ?? ""}`);
+    r = await http("GET", `/rest/v1/propiedades?select=id,slug,estado&id=eq.${oculta.id}`);
+    check("anon sigue leyendo las demás columnas", r.data?.length === 1, `HTTP ${r.status}`);
+    r = await http("GET", `/rest/v1/propiedades_publicas?select=id&${ids}`);
+    check("la vista pública no entrega borradores", r.data?.length === 1 && r.data[0].id === pub.id, `filas=${r.data?.length}`);
+    r = await http("GET", `/rest/v1/propiedades_publicas?select=direccion,lat,lng&id=eq.${oculta.id}`);
+    const aprox = r.data?.[0];
+    const metros = aprox?.lat != null ? distancia(exacta, aprox) : NaN;
+    check("con dirección oculta, la vista no entrega la dirección", aprox?.direccion === null, `HTTP ${r.status}`);
+    check("con dirección oculta, la ubicación es aproximada (distinta y a menos de 500 m)", metros > 0 && metros < 500, `${Math.round(metros)} m`);
+    r = await http("GET", `/rest/v1/propiedades_publicas?select=direccion,lat,lng&id=eq.${oculta.id}`);
+    check("la ubicación aproximada es la misma en cada lectura", r.data?.[0]?.lat === aprox?.lat && r.data?.[0]?.lng === aprox?.lng);
+    r = await http("GET", `/rest/v1/propiedades_publicas?select=direccion,lat,lng&id=eq.${visible.id}`);
+    check("con dirección visible, la vista entrega dirección y coordenadas exactas", r.data?.[0]?.direccion === "Avenida Visible 456" && r.data[0].lat === exacta.lat && r.data[0].lng === exacta.lng);
+    r = await http("GET", `/rest/v1/propiedades?select=direccion,lat,lng&id=eq.${oculta.id}`, { token: admin.token });
+    check("el admin lee la dirección y las coordenadas exactas", r.data?.[0]?.direccion === "Calle Secreta 123" && r.data[0].lat === exacta.lat, `HTTP ${r.status}`);
+    r = await http("GET", "/rest/v1/ajustes", { headers: { "Accept-Profile": "privado" } });
+    check("el esquema privado (sal) no está expuesto", r.status >= 400, `HTTP ${r.status}`);
   } finally {
     // Limpieza: propiedades (con sus fotos) y usuarios (con su fila de admins)
     await http("DELETE", `/rest/v1/propiedades?slug=like.*-${run}`, SVC);

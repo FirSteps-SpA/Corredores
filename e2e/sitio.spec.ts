@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { admin, borrarCuenta, crearCuenta, crearPropiedad, iniciarSesion, limpiarPropiedades, run, subirFoto } from "./supabase";
 
 // Spec 5 (sitio-publico). El catálogo público está cacheado ("use cache"): los datos que se

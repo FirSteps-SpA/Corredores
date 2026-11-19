@@ -47,6 +47,19 @@ const numero = (opciones: { obligatorio?: boolean; entero?: boolean } = {}) =>
       return n;
     });
 
+// Coordenadas: las escribe el mapa del panel con punto decimal ("-20.2425"); no pasan por leerNumero,
+// que leería "-70.141" como miles.
+const coordenada = (max: number) =>
+  z.string().transform((v, ctx) => {
+    if (v.trim() === "") return null;
+    const n = Number(v);
+    if (!Number.isFinite(n) || Math.abs(n) > max) {
+      ctx.addIssue({ code: "custom", message: "Ubicación inválida." });
+      return z.NEVER;
+    }
+    return n;
+  });
+
 const lista = <T extends object>(o: T, mensaje: string) => z.enum(claves(o), { error: mensaje });
 
 const esquema = z
@@ -65,6 +78,8 @@ const esquema = z
     sector: opcional(80),
     direccion: opcional(200),
     mostrar_direccion: z.boolean(),
+    lat: coordenada(90),
+    lng: coordenada(180),
     dormitorios: numero({ entero: true }),
     banos: numero({ entero: true }),
     estacionamientos: numero({ entero: true }),
@@ -78,6 +93,8 @@ const esquema = z
   .superRefine((p, ctx) => {
     if (p.moneda === "CLP" && p.precio !== null && !Number.isInteger(p.precio))
       ctx.addIssue({ code: "custom", path: ["precio"], message: "Un precio en pesos no lleva decimales." });
+    if ((p.lat === null) !== (p.lng === null))
+      ctx.addIssue({ code: "custom", path: ["ubicacion"], message: "La ubicación está incompleta." });
     if (!slugDe(p.slug || p.titulo))
       ctx.addIssue({ code: "custom", path: ["slug"], message: "Debe tener letras o números." });
   })
@@ -95,7 +112,7 @@ function leerCaracteristicas(form: FormData): string[] {
 const CAMPOS_TEXTO = [
   "titulo", "slug", "codigo", "descripcion", "operacion", "tipo", "precio", "moneda", "gastos_comunes",
   "region", "comuna", "sector", "direccion", "dormitorios", "banos", "estacionamientos", "bodegas",
-  "m2_utiles", "m2_totales", "estado", "caracteristicas_otras",
+  "m2_utiles", "m2_totales", "estado", "caracteristicas_otras", "lat", "lng",
 ] as const;
 
 export function leerPropiedad(form: FormData): Resultado {
@@ -114,7 +131,9 @@ export function leerPropiedad(form: FormData): Resultado {
 
   const errores: Errores = {};
   for (const issue of r.error.issues) {
-    const campo = String(issue.path[0] ?? "formulario");
+    // Los errores de lat/lng se muestran junto al mapa.
+    const ruta = String(issue.path[0] ?? "formulario");
+    const campo = ruta === "lat" || ruta === "lng" ? "ubicacion" : ruta;
     errores[campo] ??= issue.message;
   }
   return { ok: false, errores, valores };
