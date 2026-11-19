@@ -7,6 +7,7 @@ import { Rotulo } from "../_componentes/titulo-seccion";
 export const metadata: Metadata = {
   title: "Contacto",
   description: "Escríbenos por WhatsApp para comprar, vender o arrendar en Iquique.",
+  alternates: { canonical: "/contacto" },
 };
 
 export default function Contacto() {

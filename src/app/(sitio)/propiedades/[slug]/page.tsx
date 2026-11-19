@@ -6,6 +6,8 @@ import { precioTexto } from "@/lib/propiedades/formato";
 import { ESTADOS, OPERACIONES, TIPOS, type Estado, type Moneda, type Operacion, type Tipo } from "@/lib/propiedades/opciones";
 import { disponible } from "@/lib/propiedades/orden";
 import { fichaPublica, slugsPublicos } from "@/lib/propiedades/publico";
+import { descripcionFicha, imagenCompartir, jsonLdFicha } from "@/lib/seo";
+import { JsonLd } from "../../_componentes/json-ld";
 import { GaleriaFicha } from "../../_componentes/galeria";
 import { IconoAuto, IconoBano, IconoCama, IconoSuperficie, IconoUbicacion } from "../../_componentes/iconos";
 import { FondoMarca } from "../../_componentes/marcador";
@@ -22,9 +24,15 @@ export async function generateMetadata({ params }: PageProps<"/propiedades/[slug
   const p = await fichaPublica((await params).slug);
   // Next agrega noindex solo al llamar a notFound() en la página.
   if (!p) return { title: "Propiedad no encontrada" };
+  const descripcion = descripcionFicha(p);
+  const imagen = imagenCompartir(p.fotos[0]?.path ?? null, p.titulo);
+  const ruta = `/propiedades/${p.slug}`;
   return {
     title: p.titulo,
-    description: `${OPERACIONES[p.operacion as Operacion]} de ${TIPOS[p.tipo as Tipo].toLowerCase()} en ${[p.sector, p.comuna].filter(Boolean).join(", ")}. ${precioTexto(p.precio, p.moneda as Moneda)}.`,
+    description: descripcion,
+    alternates: { canonical: ruta },
+    openGraph: { title: p.titulo, description: descripcion, url: ruta, images: [imagen] },
+    twitter: { title: p.titulo, description: descripcion, images: [imagen.url] },
   };
 }
 
@@ -53,6 +61,7 @@ export default async function Ficha({ params }: PageProps<"/propiedades/[slug]">
 
   return (
     <article className="mx-auto max-w-6xl px-5 py-10">
+      <JsonLd datos={jsonLdFicha(p)} />
       <Link href="/propiedades" className="text-sm text-tinta/70 hover:text-tinta">
         ← Propiedades
       </Link>

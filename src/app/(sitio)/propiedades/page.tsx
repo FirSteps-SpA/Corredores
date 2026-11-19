@@ -10,6 +10,8 @@ import { Rotulo } from "../_componentes/titulo-seccion";
 export const metadata: Metadata = {
   title: "Propiedades",
   description: "Casas, departamentos y más en venta y arriendo en Iquique.",
+  // Con filtros también: la canónica es el listado sin parámetros.
+  alternates: { canonical: "/propiedades" },
 };
 
 // Los filtros vienen de la URL. Sin <Suspense> y con instant = false, la página se genera completa en
