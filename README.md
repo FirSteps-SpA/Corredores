@@ -51,6 +51,11 @@ lo mismo que el público.
 - Cada cambio del catálogo llama a `updateTag("propiedades")`: el sitio público lee el catálogo en
   funciones `"use cache"` con `cacheTag("propiedades")`.
 - Eliminar una propiedad borra también sus archivos (`<id>/…`) del bucket `propiedades`.
+- **Fotos** (en la página de cada propiedad): el navegador las comprime (`src/lib/fotos/comprimir.ts`:
+  lado mayor 1600 px, JPEG 0,8, orientación EXIF aplicada) y las sube directo a Storage con la sesión
+  de la corredora; después `registrarFoto` las anota en `propiedad_fotos`. Máximo 30 por propiedad. La
+  primera es la portada; orden con ◀ ▶ y "Portada". Acciones en
+  `src/app/admin/(panel)/propiedades/[id]/acciones-fotos.ts`.
 - `src/proxy.ts` refresca la sesión en `/admin/*` y redirige al login si no hay sesión; es solo un
   chequeo rápido. **Cada página y server action del panel llama a `exigirAdmin()`**
   (`src/lib/auth.ts`); no basta con el layout, porque Next envía la página al navegador aunque el
@@ -84,6 +89,7 @@ curl -X PUT "$SUPABASE_URL/auth/v1/admin/users/<user_id>" \
 | `npm run test:rls` | Controles de seguridad contra Supabase local: registro cerrado, contraseñas, y acceso a propiedades, fotos y Storage como público, usuario no admin y admin |
 | `npm run test:rls -- --remoto` | Contra producción, solo lo que no necesita clave secreta (registro cerrado). Usa `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` del entorno |
 | `npm run test:panel` | Controles del panel contra la app corriendo (`npm run build && npm start`) y Supabase local: redirecciones, acceso por rol, noindex, login y contraseña, y CRUD de propiedades |
+| `npm run test:e2e` | Playwright (Chromium) contra la app corriendo y Supabase local: fotos (subida comprimida, orden, portada, borrado, límite, cuenta no admin). La primera vez: `npx playwright install chromium` |
 | `npm run db:types` | Regenera `src/lib/supabase/database.types.ts` desde Supabase local. Correrlo tras cada migración |
 
 ## Supabase
@@ -108,7 +114,7 @@ curl -X PUT "$SUPABASE_URL/auth/v1/admin/users/<user_id>" \
 - Cada spec en `feat/<id>`, PR a `develop`; `develop` → `main` para publicar.
 - Commits gitmoji: `:sparkles: feat: …`, `:bug: fix: …`, `:memo: docs: …`.
 - CI (GitHub Actions): jobs `build` (lint, typecheck, `npm test`, build) y `rls` (Supabase local +
-  `test:rls`, y build + `next start` + `test:panel`).
+  `test:rls`, y build + `next start` + `test:panel` + `test:e2e`).
 
 ## Despliegue
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { exigirAdmin } from "@/lib/auth";
+import { urlPublica } from "@/lib/fotos/rutas";
 import { listarPropiedades } from "@/lib/propiedades/consultas";
 import { precioTexto } from "@/lib/propiedades/formato";
 import { ESTADOS, OPERACIONES, TIPOS, type Estado } from "@/lib/propiedades/opciones";
@@ -93,6 +94,9 @@ async function Listado({ searchParams }: Pick<PageProps<"/admin">, "searchParams
           <table className="w-full text-left text-sm">
             <thead className="border-b border-marino/10 text-xs tracking-wide text-tinta/60 uppercase">
               <tr>
+                <th className="w-20 py-3 pl-4">
+                  <span className="sr-only">Portada</span>
+                </th>
                 <th className="px-4 py-3 font-medium">Propiedad</th>
                 <th className="px-4 py-3 font-medium">Precio</th>
                 <th className="px-4 py-3 font-medium">Estado</th>
@@ -104,6 +108,16 @@ async function Listado({ searchParams }: Pick<PageProps<"/admin">, "searchParams
             <tbody>
               {propiedades.map((p) => (
                 <tr key={p.id} className="border-b border-marino/5 last:border-0">
+                  <td className="py-3 pl-4">
+                    {p.portada ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- ya viene comprimida
+                      <img src={urlPublica(p.portada)} alt="" loading="lazy" className="h-12 w-16 rounded object-cover" />
+                    ) : (
+                      <div className="flex h-12 w-16 items-center justify-center rounded bg-crema text-[10px] text-tinta/50">
+                        Sin fotos
+                      </div>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <Link href={`/admin/propiedades/${p.id}`} className="font-medium text-marino hover:underline">
                       {p.titulo}
