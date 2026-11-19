@@ -28,8 +28,7 @@
 - Buscador del hero, filtros y paginación (spec 6): el hero lleva solo "Ver propiedades" hasta entonces.
 - Open Graph, sitemap, robots y JSON-LD (spec 7). Esta spec pone `title` y `description` por página.
 - Mapa (spec 8), favoritos, formulario de contacto con correo (fuera de la v1).
-- Estado 404 real en fichas inexistentes: con `cacheComponents` la ficha se resuelve dentro de
-  `<Suspense>` y `notFound()` responde 200 con `noindex` ("soft 404"). Se revisa en la spec 7.
+- ~~Estado 404 real en fichas inexistentes~~: resuelto con `ensureStatic = "navigation"` (decisión 4).
 
 ## Decisions
 
@@ -53,7 +52,13 @@
 4. **Ficha**: `generateStaticParams` devuelve los slugs visibles o, si no hay ninguno (CI con base
    vacía), `[{ slug: "__sin-propiedades__" }]`, que termina en `notFound()`. `generateMetadata` da
    el título de la propiedad; no agrega `robots`: Next ya marca `noindex` al llamar a `notFound()` y
-   duplicarlo dejaba dos etiquetas. La página espera `params`
+   duplicarlo dejaba dos etiquetas.
+   **Corrección tras el primer deploy**: la ficha esperaba `params` dentro de `<Suspense>` y Next
+   (desde 16.3) servía un App Shell para slugs que no estaban en el build y lo completaba después; en
+   Netlify eso respondía **500 para todo slug nuevo** (local y CI funcionaban). Ahora la ficha espera
+   `params` arriba y exporta `ensureStatic = "navigation"`: la primera visita a un slug nuevo espera la
+   página completa (solo usa datos con `"use cache"`), y `notFound()` responde **404 real** (ya no hay
+   soft 404). La página espera `params`
    dentro de `<Suspense>` (App Shell para slugs nuevos, guía de ISR con Cache Components). Un slug de
    borrador o inexistente: `fichaPublica` devuelve `null` → `notFound()`.
 5. **Galería de la ficha**: carrusel con `scroll-snap` de CSS (se desliza con el dedo sin JavaScript)
@@ -105,7 +110,9 @@
   `images.unoptimized` (las fotos ya vienen comprimidas a 1600 px).
 - [Textos provisorios publicados] → basados en el mockup aprobado; revisión del cliente es compuerta
   de la spec 9.
-- [Soft 404 en fichas] → `noindex` lo saca de los buscadores; se revisa en la spec 7.
+- [El adaptador de Netlify no soporta el App Shell para params nuevos de Next 16.3] → la ficha usa
+  `ensureStatic = "navigation"`; cualquier ruta dinámica nueva del sitio público debe hacer lo mismo
+  o probarse en Netlify antes de darla por buena.
 - [El job `build` deja de construir] → el build sigue ocurriendo en `rls` y en Netlify; si el job `rls`
   falla por Supabase, el build tampoco se valida en ese PR.
 
