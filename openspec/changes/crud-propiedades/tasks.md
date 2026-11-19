@@ -25,7 +25,7 @@
 ## 5. Documentación y PR
 
 - [x] 5.1 README: `npm test`, estructura de `src/lib/propiedades/`, etiqueta de caché `propiedades`. Verificar que `lint`, `typecheck`, `test`, `build`, `test:rls` y `test:panel` pasan.
-- [ ] 5.2 Commit gitmoji y PR de `feat/crud-propiedades` a `develop`. Verificar que `build` (con `npm test`) y `rls` terminan en verde.
+- [x] 5.2 Commit gitmoji y PR de `feat/crud-propiedades` a `develop`. Verificar que `build` (con `npm test`) y `rls` terminan en verde.
 
 ## 6. Producción
 
