@@ -9,8 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Valores de relleno: el build necesita poder construir el cliente Supabase.
-    # No se conecta a ningún proyecto real.
+    # Lint, tipos y tests unitarios, sin base de datos. Valores de relleno para el código que lee
+    # las variables de Supabase; no se conecta a ningún proyecto real.
     env:
       NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:55321
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
@@ -24,7 +24,8 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
-      - run: npm run build
+      # Sin `next build` aquí: prerenderizar el catálogo y generateStaticParams necesitan la base.
+      # El build se hace en el job `rls`, contra Supabase local.
 
   rls:
     # Levanta Supabase local y corre scripts/test-rls.mjs (Auth, RLS y Storage) y, con la app
@@ -32,6 +33,12 @@ jobs:
     # ningún proyecto remoto.
     # El nombre `rls` lo exige la protección de `main`.
     runs-on: ubuntu-latest
+    # Contacto de prueba para el build y los tests del sitio público: WhatsApp e Instagram sí,
+    # correo no (Playwright verifica que solo se muestre lo configurado).
+    env:
+      NEXT_PUBLIC_WHATSAPP: "56900000000"
+      NEXT_PUBLIC_INSTAGRAM: gycmar_prueba
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

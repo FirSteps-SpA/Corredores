@@ -178,7 +178,7 @@ async function propiedades(adm, otro) {
   check("el admin edita el precio y vuelve al listado", r.status === 303 && destino(r) === `/admin?guardada=${slugBase}` && p1.precio === 5200, `${r.status} precio=${p1.precio}`);
   check("editar sin cambiar el slug lo conserva", p1.slug === slugBase, p1.slug);
   r = await pedir(`/admin/propiedades/${crypto.randomUUID()}`, adm.cookie);
-  check("editar una propiedad inexistente muestra 404", r.html.includes("could not be found") || r.status === 404, `${r.status}`);
+  check("editar una propiedad inexistente muestra 404", r.html.includes("Página no encontrada") || r.status === 404, `${r.status}`);
 
   // Listado, filtro y búsqueda
   r = await pedir("/admin", adm.cookie);

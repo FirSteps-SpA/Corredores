@@ -39,6 +39,25 @@ select id from auth.users where email = 'corredora@ejemplo.cl';
 En producción se hace igual, en el SQL Editor del panel. Las cuentas que no estén en `admins` solo ven
 lo mismo que el público.
 
+## Sitio público
+
+- Rutas en `src/app/(sitio)/`: inicio (`/`), `/propiedades`, `/propiedades/[slug]`, `/servicios`,
+  `/nosotros` y `/contacto`, con encabezado y pie comunes.
+- **Textos e imágenes institucionales en `src/contenido/sitio.ts`** (lo marcado `PROVISORIO` espera
+  el texto o la foto del cliente; con `imagen: null` se usa el fondo de marca).
+- **Contacto por variables**: `NEXT_PUBLIC_WHATSAPP`, `NEXT_PUBLIC_CONTACTO_EMAIL`,
+  `NEXT_PUBLIC_INSTAGRAM` y `NEXT_PUBLIC_SITE_URL` (`src/lib/contacto.ts`); lo que falta no se muestra.
+  Son `NEXT_PUBLIC_`: un cambio en Netlify necesita un deploy nuevo.
+- **Caché del catálogo**: `src/lib/propiedades/publico.ts` lee sin sesión (RLS: solo lo que no es
+  borrador) en funciones `"use cache"` con `cacheTag("propiedades")` y el perfil `catalogo` de
+  `next.config.ts` (renovación cada 5 minutos como respaldo). El panel llama a
+  `updateTag("propiedades")` en cada cambio. El cliente usa `fetch` con `cache: "no-store"`: si no,
+  Next cachea además cada `fetch` en `.next/cache/fetch-cache`, sin la etiqueta y entre builds.
+- Datos cargados directo en la base (sin el panel) no aparecen hasta la siguiente invalidación o
+  hasta 5 minutos después.
+- Fotos con `next/image` (`images.remotePatterns` desde `NEXT_PUBLIC_SUPABASE_URL`; en Netlify, su
+  CDN de imágenes).
+
 ## Panel (`/admin`)
 
 - `/admin/login`: correo y contraseña (sin magic link ni recuperación por correo hasta tener SMTP con
@@ -89,7 +108,7 @@ curl -X PUT "$SUPABASE_URL/auth/v1/admin/users/<user_id>" \
 | `npm run test:rls` | Controles de seguridad contra Supabase local: registro cerrado, contraseñas, y acceso a propiedades, fotos y Storage como público, usuario no admin y admin |
 | `npm run test:rls -- --remoto` | Contra producción, solo lo que no necesita clave secreta (registro cerrado). Usa `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` del entorno |
 | `npm run test:panel` | Controles del panel contra la app corriendo (`npm run build && npm start`) y Supabase local: redirecciones, acceso por rol, noindex, login y contraseña, y CRUD de propiedades |
-| `npm run test:e2e` | Playwright (Chromium) contra la app corriendo y Supabase local: fotos (subida comprimida, orden, portada, borrado, límite, cuenta no admin). La primera vez: `npx playwright install chromium` |
+| `npm run test:e2e` | Playwright (Chromium) contra la app corriendo y Supabase local: fotos del panel y sitio público (inicio, listado, ficha, WhatsApp, contacto, celular, panel → sitio). La primera vez: `npx playwright install chromium` |
 | `npm run db:types` | Regenera `src/lib/supabase/database.types.ts` desde Supabase local. Correrlo tras cada migración |
 
 ## Supabase
@@ -113,8 +132,8 @@ curl -X PUT "$SUPABASE_URL/auth/v1/admin/users/<user_id>" \
 - Specs con OpenSpec (`openspec/changes/<id>`, comandos `/opsx:*`).
 - Cada spec en `feat/<id>`, PR a `develop`; `develop` → `main` para publicar.
 - Commits gitmoji: `:sparkles: feat: …`, `:bug: fix: …`, `:memo: docs: …`.
-- CI (GitHub Actions): jobs `build` (lint, typecheck, `npm test`, build) y `rls` (Supabase local +
-  `test:rls`, y build + `next start` + `test:panel` + `test:e2e`).
+- CI (GitHub Actions): jobs `build` (lint, typecheck, `npm test`; sin `next build`, que necesita la
+  base) y `rls` (Supabase local + `test:rls`, y build + `next start` + `test:panel` + `test:e2e`).
 
 ## Despliegue
 
