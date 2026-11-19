@@ -36,13 +36,14 @@ export async function guardarPropiedad(previo: EstadoFormulario, form: FormData)
   for (let intento = 0; intento < 2; intento++) {
     const slug = await slugDisponible(supabase, r.datos.slug, id);
     const datos = { ...r.datos, slug };
-    const { error } = id
+    const { data, error } = id
       ? await supabase.from("propiedades").update(datos).eq("id", id).select("id").single()
       : await supabase.from("propiedades").insert(datos).select("id").single();
 
     if (!error) {
       updateTag(CATALOGO);
-      redirect(`/admin?guardada=${encodeURIComponent(slug)}`);
+      // Al crear, a la página de la propiedad para agregar fotos; al editar, al listado.
+      redirect(id ? `/admin?guardada=${encodeURIComponent(slug)}` : `/admin/propiedades/${data.id}?creada=1`);
     }
     if (error.code === "23505" && error.message.includes("slug")) continue;
     if (error.code === "23505" && error.message.includes("codigo"))

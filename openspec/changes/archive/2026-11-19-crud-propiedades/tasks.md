@@ -29,7 +29,9 @@
 
 ## 6. Producción
 
-- [ ] 6.1 (Con visto bueno explícito) Release a `main`. Verificar en https://gycmar.netlify.app/admin, con la cuenta de la corredora (la prueba la hace el usuario), que el listado vacío aparece y que se puede crear una propiedad de prueba en borrador y eliminarla.
+- [x] 6.1 (Con visto bueno explícito) Release a `main`. Verificar en https://gycmar.netlify.app/admin, con la cuenta de la corredora (la prueba la hace el usuario), que el listado vacío aparece y que se puede crear una propiedad de prueba en borrador y eliminarla.
+
+Avance (2026-11-19): release PR #9 (`1dfa310`) con `build` y `rls` en verde. Desde fuera solo se pudo comprobar que `/admin` y `/admin/propiedades/nueva` sin sesión redirigen al login (el proxy lo hace para cualquier ruta de `/admin`, así que no confirma el deploy). El usuario confirmó con la cuenta de la corredora el listado vacío, el alta de una propiedad de prueba en borrador y su eliminación (6.1).
 
 ## Workflow follow-up
 

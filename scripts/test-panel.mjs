@@ -154,7 +154,9 @@ async function propiedades(adm, otro) {
   // Alta
   let r = await enviar("/admin/propiedades/nueva", adm.cookie, "titulo", datos());
   let [p1] = await filas();
-  check("el admin crea una propiedad", r.status === 303 && destino(r) === `/admin?guardada=${slugBase}` && p1?.precio === 4500, `${r.status} ${destino(r)}`);
+  check("el admin crea una propiedad y va a su página para agregar fotos", r.status === 303 && destino(r) === `/admin/propiedades/${p1?.id}?creada=1` && p1?.precio === 4500, `${r.status} ${destino(r)}`);
+  r = await pedir(destino(r), adm.cookie);
+  check("la página de la propiedad nueva avisa y muestra la sección de fotos", r.html.includes("Propiedad creada. Agrega sus fotos.") && r.html.includes("Todavía no hay fotos"));
   check("el slug se genera del título", p1?.slug === slugBase, p1?.slug);
   r = await enviar("/admin/propiedades/nueva", adm.cookie, "titulo", datos({ estado: "publicada", codigo: `C-${run}` }));
   const [, p2] = await filas();
@@ -173,7 +175,7 @@ async function propiedades(adm, otro) {
   check("el formulario de edición muestra los valores actuales", r.html.includes(`value="${slugBase}"`) && r.html.includes('value="4500"'));
   r = await enviar(`/admin/propiedades/${p1.id}`, adm.cookie, "titulo", datos({ id: p1.id, slug: p1.slug, precio: "5.200" }));
   [p1] = await filas();
-  check("el admin edita el precio", r.status === 303 && p1.precio === 5200, `${r.status} precio=${p1.precio}`);
+  check("el admin edita el precio y vuelve al listado", r.status === 303 && destino(r) === `/admin?guardada=${slugBase}` && p1.precio === 5200, `${r.status} precio=${p1.precio}`);
   check("editar sin cambiar el slug lo conserva", p1.slug === slugBase, p1.slug);
   r = await pedir(`/admin/propiedades/${crypto.randomUUID()}`, adm.cookie);
   check("editar una propiedad inexistente muestra 404", r.html.includes("could not be found") || r.status === 404, `${r.status}`);
