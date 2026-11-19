@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Panel · GyCmar Propiedades Iquique",
+  title: "Panel",
   robots: { index: false, follow: false },
 };
 
