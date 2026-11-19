@@ -32,7 +32,7 @@
 ## 6. Netlify
 
 - [x] 6.1 Crear `netlify.toml` (comando `npm run build`, Node 24). Verificar que `npm run build` local sigue pasando.
-- [ ] 6.2 (Usuario) Crear el sitio en Netlify desde el repo: rama de producción `main`, deploy previews y branch deploys desactivados, variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` y, si existe, `NEXT_PUBLIC_SENTRY_DSN`. Verificar después del merge a `main` que la URL de Netlify muestra la página provisional con favicon.
+- [x] 6.2 (Usuario) Crear el sitio en Netlify desde el repo: rama de producción `main`, deploy previews y branch deploys desactivados, variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` y, si existe, `NEXT_PUBLIC_SENTRY_DSN`. Verificar después del merge a `main` que la URL de Netlify muestra la página provisional con favicon.
 
 ## 7. Documentación y PR
 
