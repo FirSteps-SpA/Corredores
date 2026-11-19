@@ -30,8 +30,10 @@
 
 ## 7. Producción
 
-- [ ] 7.1 (Con visto bueno explícito del usuario) `supabase db push --dry-run` y luego `supabase db push` al proyecto `ioslqobvauapjpwhkgts`. Verificar en el panel que las tablas existen con RLS activo, que el bucket tiene sus límites y que el advisor de seguridad no reporta problemas nuevos.
-- [ ] 7.2 Verificar contra producción con la clave publishable que `GET /rest/v1/propiedades` responde 200 con `[]` y que un `POST` sin sesión es rechazado.
+- [x] 7.1 (Con visto bueno explícito del usuario) `supabase db push --dry-run` y luego `supabase db push` al proyecto `ioslqobvauapjpwhkgts`. Verificar en el panel que las tablas existen con RLS activo, que el bucket tiene sus límites y que el advisor de seguridad no reporta problemas nuevos.
+- [x] 7.2 Verificar contra producción con la clave publishable que `GET /rest/v1/propiedades` responde 200 con `[]` y que un `POST` sin sesión es rechazado.
+
+Resultado (2026-11-19): migraciones aplicadas; RLS activo en las tres tablas; bucket con sus límites; `db lint` sin errores; `GET /rest/v1/propiedades` 200 `[]`, `POST` sin sesión 401, listado del bucket `[]`; `test:rls -- --remoto` OK. Advisor: `es_admin()` ejecutable por `anon` y `authenticated` (lints 0028/0029), intencional: las policies la evalúan con el rol de quien consulta y solo responde si quien llama es admin. `rls_auto_enable()` es de la plataforma (igual que en DentdeLion).
 
 ## Workflow follow-up
 
