@@ -1,0 +1,33 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+context: |
+  Sitio web de GyCmar Propiedades Iquique (corredora de propiedades, un solo cliente, no multi-tenant).
+  Público: ve propiedades y contacta por WhatsApp. Corredora (admin): CRUD de propiedades y fotos.
+  Stack: Next.js (App Router) + TypeScript estricto + Tailwind, Supabase (Auth, Postgres con RLS, Storage), Vercel.
+  Sin service_role en la app: todo pasa por RLS. Desarrollo contra Supabase local.
+  Artefactos en español. Commits gitmoji (`:emoji: tipo: mensaje`), specs por PR a `develop`.
+  Plan del proyecto: 1stDocs/001-planificacion/003-corredores/000-plan-portal-propiedades.md
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
