@@ -31,6 +31,8 @@
 
 - [ ] 6.1 (Con visto bueno explícito) Release a `main`. Verificar con el usuario, desde el celular de la corredora, subir fotos desde la galería y la cámara, ordenarlas, elegir portada y borrar una.
 
+Avance (2026-11-19): release PR #11 (`064ae2e`) con `build` y `rls` en verde. Falta la prueba del usuario desde el celular de la corredora para cerrar 6.1.
+
 ## Workflow follow-up
 
 - Archivar el change con `openspec archive` en `develop` cuando esté en producción.
