@@ -18,7 +18,7 @@
 
 - [x] 4.1 `e2e/mapa.spec.ts` (decisión 8). Verificar que pasan y que el de ubicación aproximada falla si la ficha recibe las coordenadas de la tabla (revertir después).
 - [x] 4.2 README (vista, ubicación aproximada, mapas). Verificar que `lint`, `typecheck`, `test`, `test:rls`, `test:panel` y `test:e2e` pasan.
-- [ ] 4.3 Commit gitmoji y PR de `feat/mapa` a `develop`. Verificar que `build` y `rls` terminan en verde.
+- [x] 4.3 Commit gitmoji y PR de `feat/mapa` a `develop`. Verificar que `build` y `rls` terminan en verde.
 
 ## 5. Producción
 
