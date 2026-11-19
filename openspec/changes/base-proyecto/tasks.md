@@ -36,7 +36,7 @@
 ## 7. Documentación y PR
 
 - [x] 7.1 Reescribir `README.md`: requisitos, `.env.local`, `supabase start`, `npm run dev`, `test:rls`, ramas y despliegue. Verificar siguiendo el README desde cero que el sitio levanta.
-- [ ] 7.2 Commit gitmoji y PR de `feat/base-proyecto` a `develop`. Verificar que los jobs `build` y `rls` terminan en verde.
+- [x] 7.2 Commit gitmoji y PR de `feat/base-proyecto` a `develop`. Verificar que los jobs `build` y `rls` terminan en verde.
 - [ ] 7.3 (Usuario, con `gh` o desde GitHub) Proteger `main` exigiendo `build` y `rls`, sin force push. Verificar en Settings › Branches.
 - [ ] 7.4 (Usuario) En el panel de Supabase: contraseñas de mínimo 10 con letras y dígitos, protección contra contraseñas filtradas, Site URL con la URL de Netlify y Redirect URLs `http://localhost:3000/**` y la de Netlify. Verificar repitiendo 3.5.
 
