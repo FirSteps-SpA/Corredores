@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* Identidad de GyCmar Propiedades Iquique (ver ref/ y el plan en 1stDocs). */
+@theme inline {
+  --color-marino: #04142c;
+  --color-oro: #c89860;
+  --color-oro-claro: #e0b888;
+  --color-crema: #f3ece3;
+  --color-tinta: #1a1a1a;
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: #ffffff;
+  color: var(--color-tinta);
+}
