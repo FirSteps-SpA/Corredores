@@ -6,6 +6,7 @@ import { BotonWhatsApp } from "../_componentes/whatsapp";
 export const metadata: Metadata = {
   title: "Servicios",
   description: "Venta, arriendo, compra y asesoría inmobiliaria en Iquique.",
+  alternates: { canonical: "/servicios" },
 };
 
 export default function Servicios() {

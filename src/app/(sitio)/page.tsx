@@ -3,18 +3,24 @@ import Link from "next/link";
 import { hablamos, hero, sobreNosotros, valores } from "@/contenido/sitio";
 import { opcionesDe } from "@/lib/propiedades/filtros";
 import { destacadasInicio, listadoPublico } from "@/lib/propiedades/publico";
+import { jsonLdCorredora } from "@/lib/seo";
+import type { Metadata } from "next";
 import { Buscador } from "./_componentes/buscador";
+import { JsonLd } from "./_componentes/json-ld";
 import { IconoFlecha, IconoValor } from "./_componentes/iconos";
 import { FondoMarca } from "./_componentes/marcador";
 import { TarjetaPropiedad } from "./_componentes/tarjeta";
 import { Rotulo } from "./_componentes/titulo-seccion";
 import { BotonWhatsApp } from "./_componentes/whatsapp";
 
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+
 export default async function Inicio() {
   const [destacadas, catalogo] = await Promise.all([destacadasInicio(), listadoPublico()]);
   const { comunas } = opcionesDe(catalogo);
   return (
     <>
+      <JsonLd datos={jsonLdCorredora({ telefono: process.env.NEXT_PUBLIC_WHATSAPP })} />
       <section className="relative">
         {hero.imagen ? (
           <div className="relative min-h-[460px] sm:min-h-[540px]">

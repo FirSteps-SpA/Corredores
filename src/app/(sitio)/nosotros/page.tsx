@@ -8,6 +8,7 @@ import { Rotulo } from "../_componentes/titulo-seccion";
 export const metadata: Metadata = {
   title: "Nosotros",
   description: "Corredora de propiedades en Iquique: atención cercana, transparente y profesional.",
+  alternates: { canonical: "/nosotros" },
 };
 
 export default function Nosotros() {
