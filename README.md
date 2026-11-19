@@ -60,6 +60,12 @@ lo mismo que el público.
   envía `rango=operacion:MONEDA:desde:hasta`). Lógica en `src/lib/propiedades/filtros.ts`. La página
   se genera completa en cada visita (`instant = false`, sin `<Suspense>`) para que los filtros funcionen
   sin JavaScript. Rangos del buscador en `src/contenido/sitio.ts`.
+- **Compartir y buscadores** (`src/lib/seo.ts`): `metadataBase` desde `NEXT_PUBLIC_SITE_URL`; cada
+  ficha con Open Graph (portada por `/_next/image` a 1200 px y `q=75`, la única calidad permitida por
+  defecto) y JSON-LD `RealEstateListing` (UF como `CLF`; sin dirección si está oculta); el inicio con
+  JSON-LD `RealEstateAgent`; imagen de marca `public/compartir.jpg` (1200 × 630); canónicas (el
+  listado con filtros apunta a `/propiedades`); `src/app/sitemap.ts` (fichas visibles, se invalida con
+  el panel) y `src/app/robots.ts` (excluye `/admin`).
 - **UF del día** (`src/lib/uf/`): findic.cl, cacheada un día (perfil `uf`); si falla, el último valor
   bueno hasta 7 días, luego `UF_RESPALDO`, luego comparación solo en la misma moneda. En pruebas,
   `UF_FUENTE=ninguna` + `UF_RESPALDO=40000`.
