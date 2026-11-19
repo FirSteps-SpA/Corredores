@@ -18,12 +18,12 @@
 ## 4. Controles automáticos
 
 - [x] 4.1 Crear `scripts/test-panel.mjs` y el script `npm run test:panel` con los controles de la decisión 8 (admin y no admin creados y borrados por el script; aborta si la URL no es local). Verificar que pasan contra `npm run build && npm start` y que fallan si se quita temporalmente `exigirAdmin()` de una página (revertir después).
-- [ ] 4.2 Sumar al job `rls` de `.github/workflows/ci.yml` `npm ci`, variables desde `supabase status -o env`, `npm run build`, `npm start` en segundo plano con espera y `npm run test:panel` (decisión 9). Verificar en el PR que `rls` termina en verde y que su log muestra los controles del panel.
+- [x] 4.2 Sumar al job `rls` de `.github/workflows/ci.yml` `npm ci`, variables desde `supabase status -o env`, `npm run build`, `npm start` en segundo plano con espera y `npm run test:panel` (decisión 9). Verificar en el PR que `rls` termina en verde y que su log muestra los controles del panel.
 
 ## 5. Documentación y PR
 
 - [x] 5.1 README: panel, alta de la corredora (decisión 7), reset de contraseña por el equipo, `test:panel`. Verificar siguiendo los pasos con una cuenta local nueva.
-- [ ] 5.2 Commit gitmoji y PR de `feat/auth-panel` a `develop`. Verificar que `build` y `rls` terminan en verde.
+- [x] 5.2 Commit gitmoji y PR de `feat/auth-panel` a `develop`. Verificar que `build` y `rls` terminan en verde.
 
 ## 6. Producción
 
