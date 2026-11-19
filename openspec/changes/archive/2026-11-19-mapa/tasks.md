@@ -23,9 +23,9 @@
 ## 5. Producción
 
 - [x] 5.1 (Con visto bueno explícito) `supabase db push --dry-run` y `supabase db push`; luego release a `main`. Verificar con la clave publishable que `direccion` no se puede leer de la tabla y que la vista responde; advisor de seguridad revisado.
-- [ ] 5.2 (Usuario) Marcar la ubicación de una propiedad en el panel y revisar la ficha con dirección visible y oculta.
+- [x] 5.2 (Usuario) Marcar la ubicación de una propiedad en el panel y revisar la ficha con dirección visible y oculta.
 
-Avance (2026-11-19): release PR #23 preparado con CI en verde; migración aplicada en producción y release mergeado de inmediato (`82fcaba`, 16:30) para acortar la ventana en que la ficha del código anterior (que leía `select *`) fallaba. Verificado con la clave publishable: `direccion` de la tabla → 401, demás columnas 200, vista 200, esquema `privado` no expuesto. Advisor: `security_definer_view` (ERROR, intencional y documentado) más los avisos previos de `es_admin()` y `rls_auto_enable()`. Falta 5.2 (usuario): marcar la ubicación de una propiedad y revisar la ficha con dirección visible y oculta.
+Avance (2026-11-19): release PR #23 preparado con CI en verde; migración aplicada en producción y release mergeado de inmediato (`82fcaba`, 16:30) para acortar la ventana en que la ficha del código anterior (que leía `select *`) fallaba. Verificado con la clave publishable: `direccion` de la tabla → 401, demás columnas 200, vista 200, esquema `privado` no expuesto. Advisor: `security_definer_view` (ERROR, intencional y documentado) más los avisos previos de `es_admin()` y `rls_auto_enable()`. El usuario confirmó el mapa en el panel y en la ficha con dirección visible y oculta (5.2).
 
 ## Workflow follow-up
 
