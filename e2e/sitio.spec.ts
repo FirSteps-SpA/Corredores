@@ -104,7 +104,8 @@ test("ficha: dirección visible, sin fotos, vendida sin botón", async ({ page }
 
 test("borrador e inexistente: no encontrada y sin datos", async ({ page }) => {
   for (const ruta of [`/propiedades/${slug("Borrador")}`, `/propiedades/no-existe-${run}`]) {
-    await page.goto(ruta);
+    const res = await page.goto(ruta);
+    expect(res?.status()).toBe(404);
     await expect(page.getByRole("heading", { name: "Propiedad no encontrada" })).toBeVisible();
     expect(await page.content()).not.toContain(t("Borrador"));
     // Next la marca noindex (en el navegador aparece en head y en body por el streaming).
@@ -151,6 +152,11 @@ test("lo que la corredora publica o retira en el panel se ve en el sitio", async
   await expect.poll(async () => (await admin("GET", `/rest/v1/propiedades?select=estado&id=eq.${ids.Borrador}`)).data[0].estado).toBe("publicada");
   await page.goto("/propiedades");
   await expect(page.locator("article h3", { hasText: nombre })).toBeVisible();
+  // Su ficha no se generó en el build: se genera en esta primera visita (en Netlify, con el
+  // App Shell por defecto, respondía 500).
+  const res = await page.goto(`/propiedades/${slug("Borrador")}`);
+  expect(res?.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(nombre);
 
   await panel.goto("/admin");
   await panel.getByLabel(`Estado de ${nombre}`).selectOption("borrador");
