@@ -63,8 +63,9 @@
    relleno) y `rls` (`supabase/setup-cli@v1` versión fija 3.2.0, `supabase start` sin servicios
    innecesarios, `npm run test:rls`), Node 24, en push y PR a `main` y `develop`.
 10. **Netlify** en lugar de Vercel: el plan Hobby de Vercel no permite uso comercial; Netlify gratis sí,
-    y ya se usa con DentdeLion. `netlify.toml` con `npm run build`, Node 24 y el adaptador de Next.js que
-    Netlify detecta solo (soporta ISR y `revalidatePath`). Rama de producción `main`; deploy previews y
+    y ya se usa con DentdeLion. `netlify.toml` con `npm run build`, Node 24, `publish = ".next"` y el
+    plugin `@netlify/plugin-nextjs` explícito (soporta ISR y `revalidatePath`). La detección automática
+    falló en el primer deploy: Netlify publicó la raíz del repo con 0 archivos y el sitio dio 404 (PR #3). Rama de producción `main`; deploy previews y
     branch deploys desactivados (no hay proyecto Supabase de desarrollo en la nube).
 11. **Sentry opcional por entorno**: proyecto `first-steps/corredores` (javascript-nextjs).
     `@sentry/nextjs` con `instrumentation.ts`, `instrumentation-client.ts` y `global-error.tsx`; opciones

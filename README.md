@@ -58,7 +58,8 @@ El registro público está desactivado. Para tener una cuenta local, créala en 
 
 ## Despliegue
 
-Netlify publica `main` (`netlify.toml`). Sin deploy previews: no hay proyecto Supabase de desarrollo en
+Netlify publica `main` en https://gycmar.netlify.app (`netlify.toml`, con el adaptador
+`@netlify/plugin-nextjs` explícito). Sin deploy previews: no hay proyecto Supabase de desarrollo en
 la nube. Variables en Netlify: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
 `NEXT_PUBLIC_WHATSAPP` y, para Sentry, `NEXT_PUBLIC_SENTRY_DSN` y `SENTRY_AUTH_TOKEN`.
 
