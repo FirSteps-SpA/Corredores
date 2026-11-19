@@ -42,7 +42,15 @@ lo mismo que el público.
 ## Panel (`/admin`)
 
 - `/admin/login`: correo y contraseña (sin magic link ni recuperación por correo hasta tener SMTP con
-  dominio). `/admin`: inicio del panel. `/admin/cuenta`: cambio de contraseña (pide la actual).
+  dominio). `/admin`: listado de propiedades (filtro por estado y búsqueda en la URL, cambio de estado,
+  destacar y eliminar). `/admin/propiedades/nueva` y `/admin/propiedades/[id]`: formulario.
+  `/admin/cuenta`: cambio de contraseña (pide la actual).
+- Lógica de propiedades sin Next en `src/lib/propiedades/` (slug, validación con zod, formato de precio,
+  opciones), con tests unitarios; lecturas del panel en `consultas.ts`; server actions en
+  `src/app/admin/(panel)/propiedades/acciones.ts`.
+- Cada cambio del catálogo llama a `updateTag("propiedades")`: el sitio público lee el catálogo en
+  funciones `"use cache"` con `cacheTag("propiedades")`.
+- Eliminar una propiedad borra también sus archivos (`<id>/…`) del bucket `propiedades`.
 - `src/proxy.ts` refresca la sesión en `/admin/*` y redirige al login si no hay sesión; es solo un
   chequeo rápido. **Cada página y server action del panel llama a `exigirAdmin()`**
   (`src/lib/auth.ts`); no basta con el layout, porque Next envía la página al navegador aunque el
@@ -70,11 +78,12 @@ curl -X PUT "$SUPABASE_URL/auth/v1/admin/users/<user_id>" \
 |---|---|
 | `npm run dev` | Servidor de desarrollo |
 | `npm run lint` | ESLint |
+| `npm test` | Tests unitarios (Vitest) |
 | `npm run typecheck` | Genera los tipos de rutas (`next typegen`) y corre `tsc --noEmit` |
 | `npm run build` | Build de producción |
 | `npm run test:rls` | Controles de seguridad contra Supabase local: registro cerrado, contraseñas, y acceso a propiedades, fotos y Storage como público, usuario no admin y admin |
 | `npm run test:rls -- --remoto` | Contra producción, solo lo que no necesita clave secreta (registro cerrado). Usa `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` del entorno |
-| `npm run test:panel` | Controles del panel contra la app corriendo (`npm run build && npm start`) y Supabase local: redirecciones, acceso por rol, noindex y formularios |
+| `npm run test:panel` | Controles del panel contra la app corriendo (`npm run build && npm start`) y Supabase local: redirecciones, acceso por rol, noindex, login y contraseña, y CRUD de propiedades |
 | `npm run db:types` | Regenera `src/lib/supabase/database.types.ts` desde Supabase local. Correrlo tras cada migración |
 
 ## Supabase
@@ -98,7 +107,8 @@ curl -X PUT "$SUPABASE_URL/auth/v1/admin/users/<user_id>" \
 - Specs con OpenSpec (`openspec/changes/<id>`, comandos `/opsx:*`).
 - Cada spec en `feat/<id>`, PR a `develop`; `develop` → `main` para publicar.
 - Commits gitmoji: `:sparkles: feat: …`, `:bug: fix: …`, `:memo: docs: …`.
-- CI (GitHub Actions): jobs `build` (lint, typecheck, build) y `rls` (Supabase local + `test:rls`).
+- CI (GitHub Actions): jobs `build` (lint, typecheck, `npm test`, build) y `rls` (Supabase local +
+  `test:rls`, y build + `next start` + `test:panel`).
 
 ## Despliegue
 

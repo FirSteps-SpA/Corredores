@@ -1,6 +1,8 @@
 // Controles del panel /admin contra la app corriendo (`npm run build && npm start`) y Supabase LOCAL.
 // Spec 2 (auth-panel): redirecciones del proxy, acceso por rol en el servidor, noindex y
 // formularios (login, cierre de sesión, cambio de contraseña).
+// Spec 3 (crud-propiedades): listado, filtro y búsqueda, alta, edición, validación, slug,
+// acciones rápidas y eliminación (con sus archivos en Storage).
 //
 // Uso: npm run test:panel   (APP_URL, por defecto http://localhost:3000)
 //
@@ -82,12 +84,13 @@ function aplicarCookies(cookie, res) {
   return [...jar].map(([n, v]) => `${n}=${v}`).join("; ");
 }
 
-// Envía el formulario de `path` que tiene un campo cuyo nombre empieza con `campoClave`, con `datos`.
-async function enviar(path, cookie, campoClave, datos, cookieEnvio = cookie) {
+// Envía el formulario de `path` que tiene un campo cuyo nombre empieza con `campoClave` (y que
+// contiene `filtro`, si se indica), con `datos`. `cookieEnvio` permite enviarlo con otra sesión.
+async function enviar(path, cookie, campoClave, datos, { cookieEnvio = cookie, filtro = "" } = {}) {
   const pagina = await pedir(path, cookie);
   const form = [...pagina.html.matchAll(/<form[^>]*>([\s\S]*?)<\/form>/g)]
     .map((m) => m[1])
-    .find((f) => f.includes(`name="${campoClave}`));
+    .find((f) => f.includes(`name="${campoClave}`) && f.includes(filtro));
   if (!form) throw new Error(`sin formulario con ${campoClave} en ${path} (HTTP ${pagina.status})`);
   const fd = new FormData();
   for (const [, attrs] of form.matchAll(/<input([^>]*type="hidden"[^>]*)>/g)) {
@@ -111,6 +114,108 @@ async function enviar(path, cookie, campoClave, datos, cookieEnvio = cookie) {
 }
 
 const destino = (r) => (r.location ? new URL(r.location, APP).pathname + new URL(r.location, APP).search : "");
+
+async function propiedades(adm, otro) {
+  const tituloBase = `Casa en Cavancha ${run}`;
+  const slugBase = `casa-en-cavancha-${run}`;
+  const datos = (extra = {}) => ({
+    titulo: tituloBase,
+    slug: "",
+    estado: "borrador",
+    codigo: "",
+    operacion: "venta",
+    tipo: "casa",
+    precio: "4.500",
+    moneda: "UF",
+    gastos_comunes: "",
+    comuna: "Iquique",
+    sector: "Cavancha",
+    region: "Tarapacá",
+    direccion: "",
+    dormitorios: "3",
+    banos: "2",
+    estacionamientos: "",
+    bodegas: "",
+    m2_utiles: "",
+    m2_totales: "",
+    caracteristicas_otras: "",
+    descripcion: "",
+    ...extra,
+  });
+  const filas = async (filtro = `titulo=like.*${run}*`) =>
+    (await admin("GET", `/rest/v1/propiedades?select=*&${filtro}&order=created_at`)).data ?? [];
+
+  const total = (await admin("GET", "/rest/v1/propiedades?select=id")).data?.length;
+  if (total === 0) {
+    const r = await pedir("/admin", adm.cookie);
+    check("con el catálogo vacío el listado lo avisa", r.html.includes("Todavía no hay propiedades."));
+  }
+
+  // Alta
+  let r = await enviar("/admin/propiedades/nueva", adm.cookie, "titulo", datos());
+  let [p1] = await filas();
+  check("el admin crea una propiedad", r.status === 303 && destino(r) === `/admin?guardada=${slugBase}` && p1?.precio === 4500, `${r.status} ${destino(r)}`);
+  check("el slug se genera del título", p1?.slug === slugBase, p1?.slug);
+  r = await enviar("/admin/propiedades/nueva", adm.cookie, "titulo", datos({ estado: "publicada", codigo: `C-${run}` }));
+  const [, p2] = await filas();
+  check("un slug repetido recibe el sufijo -2", p2?.slug === `${slugBase}-2`, p2?.slug);
+
+  // Validación
+  r = await enviar("/admin/propiedades/nueva", adm.cookie, "titulo", datos({ precio: "", dormitorios: "-2", sector: `Sector ${run}` }));
+  check("guardar sin precio y con dormitorios negativos se rechaza", r.status === 200 && (await filas()).length === 2, `${r.status}`);
+  check("los errores vuelven por campo", r.html.includes('"precio":"Obligatorio."') && r.html.includes('"dormitorios":"No puede ser negativo."'));
+  check("lo ingresado vuelve para no perderlo", r.html.includes(`Sector ${run}`));
+  r = await enviar("/admin/propiedades/nueva", adm.cookie, "titulo", datos({ titulo: `Otra ${run}`, codigo: `C-${run}` }));
+  check("un código repetido se rechaza en su campo", r.html.includes("Ese código ya lo usa otra propiedad."), `${r.status}`);
+
+  // Edición
+  r = await pedir(`/admin/propiedades/${p1.id}`, adm.cookie);
+  check("el formulario de edición muestra los valores actuales", r.html.includes(`value="${slugBase}"`) && r.html.includes('value="4500"'));
+  r = await enviar(`/admin/propiedades/${p1.id}`, adm.cookie, "titulo", datos({ id: p1.id, slug: p1.slug, precio: "5.200" }));
+  [p1] = await filas();
+  check("el admin edita el precio", r.status === 303 && p1.precio === 5200, `${r.status} precio=${p1.precio}`);
+  check("editar sin cambiar el slug lo conserva", p1.slug === slugBase, p1.slug);
+  r = await pedir(`/admin/propiedades/${crypto.randomUUID()}`, adm.cookie);
+  check("editar una propiedad inexistente muestra 404", r.html.includes("could not be found") || r.status === 404, `${r.status}`);
+
+  // Listado, filtro y búsqueda
+  r = await pedir("/admin", adm.cookie);
+  check("el listado muestra borradores y publicadas", r.html.includes(p1.id) && r.html.includes(p2.id));
+  r = await pedir("/admin?estado=publicada", adm.cookie);
+  check("el filtro por estado deja solo ese estado", !r.html.includes(p1.id) && r.html.includes(p2.id));
+  r = await pedir(`/admin?q=${encodeURIComponent(`CAVANCHÁ ${run}`)}`, adm.cookie);
+  check("la búsqueda ignora tildes y mayúsculas", r.html.includes(p1.id) && r.html.includes(p2.id));
+  r = await pedir(`/admin?q=${encodeURIComponent(`c-${run}`)}`, adm.cookie);
+  check("la búsqueda encuentra por código", !r.html.includes(p1.id) && r.html.includes(p2.id));
+  r = await pedir(`/admin?q=nada-${run}`, adm.cookie);
+  check("una búsqueda sin resultados lo avisa", r.html.includes("No hay propiedades que coincidan"));
+
+  // Acciones rápidas
+  r = await enviar("/admin", adm.cookie, "estado", { estado: "vendida" }, { filtro: p1.id });
+  [p1] = await filas();
+  check("cambiar estado desde el listado", p1.estado === "vendida", `${r.status} ${p1.estado}`);
+  r = await enviar("/admin", adm.cookie, "destacada", {}, { filtro: p1.id });
+  [p1] = await filas();
+  check("destacar desde el listado", p1.destacada === true, `${r.status}`);
+
+  // Cuenta no admin: la acción de crear no crea nada
+  r = await enviar("/admin/propiedades/nueva", adm.cookie, "titulo", datos({ titulo: `Intrusa ${run}` }), { cookieEnvio: otro.cookie });
+  check(
+    "una cuenta no admin no puede crear con la acción del panel",
+    (await filas(`titulo=eq.Intrusa ${run}`)).length === 0 && destino(r) === "/admin/sin-acceso",
+    `${r.status} ${destino(r)}`,
+  );
+
+  // Eliminar, con un archivo de foto en <id>/
+  const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", "base64");
+  const ruta = `${p1.id}/${crypto.randomUUID()}.png`;
+  const subida = await fetch(`${API}/storage/v1/object/propiedades/${ruta}`, { method: "POST", headers: { apikey: SECRET, "Content-Type": "image/png" }, body: png });
+  const foto = `${API}/storage/v1/object/public/propiedades/${ruta}`;
+  check("(preparación) foto subida a la propiedad", subida.status === 200 && (await fetch(foto)).status === 200, `${subida.status}`);
+  r = await enviar("/admin", adm.cookie, "$ACTION_REF_", {}, { filtro: p1.id });
+  check("eliminar borra la propiedad", (await filas(`id=eq.${p1.id}`)).length === 0, `${r.status}`);
+  check("eliminar borra sus archivos de fotos", (await fetch(foto)).status >= 400);
+}
 
 console.log(`App: ${APP}  ·  Supabase local: ${API}\n`);
 const cuentas = [];
@@ -167,6 +272,10 @@ try {
   r = await pedir("/admin", alterada);
   check("con una sesión alterada, /admin redirige al login", r.status === 307 && destino(r).startsWith("/admin/login"), `${r.status} ${destino(r)}`);
 
+  // Propiedades (spec 3), con la sesión del admin
+  console.log("\n-- Propiedades");
+  await propiedades(adm, otro);
+
   // Formularios: login
   console.log("\n-- Formularios");
   const conSesion = (c) => /sb-[^=]+-auth-token/.test(c);
@@ -186,7 +295,7 @@ try {
 
   // Cambio de contraseña
   const cambio = (actual, nueva, confirmacion = nueva, c = cookieForm) =>
-    enviar("/admin/cuenta", cookieForm, "actual", { actual, nueva, confirmacion }, c);
+    enviar("/admin/cuenta", cookieForm, "actual", { actual, nueva, confirmacion }, { cookieEnvio: c });
   r = await cambio("Incorrecta-123", "Nueva-clave-123");
   check("cambio con la contraseña actual incorrecta se rechaza", r.html.includes("La contraseña actual no es correcta."), `${r.status}`);
   r = await cambio(password, "Nueva-clave-123", "Otra-clave-123");
@@ -204,11 +313,12 @@ try {
 
   // Cierre de sesión
   // El botón de cerrar sesión es un form sin estado: su campo oculto es $ACTION_ID_<id>.
-  r = await enviar("/admin", cookieForm, "$ACTION_ID_", {});
+  r = await enviar("/admin", cookieForm, "$ACTION_ID_", {}, { filtro: "Cerrar sesión" });
   check("cerrar sesión lleva al login y borra la sesión", r.status === 303 && destino(r) === "/admin/login" && !conSesion(r.cookie), `${r.status} ${destino(r)}`);
   r = await pedir("/admin", r.cookie);
   check("después de cerrar sesión, /admin pide login", r.status === 307 && destino(r).startsWith("/admin/login"), `${r.status} ${destino(r)}`);
 } finally {
+  await admin("DELETE", `/rest/v1/propiedades?titulo=like.*${run}*`);
   for (const c of cuentas) await admin("DELETE", `/auth/v1/admin/users/${c.id}`);
 }
 
