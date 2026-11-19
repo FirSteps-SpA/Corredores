@@ -23,9 +23,9 @@
 ## 5. Producción
 
 - [x] 5.1 (Usuario, opcional) Agregar `UF_RESPALDO` en Netlify con un valor cercano al del día. Verificar en la configuración del sitio.
-- [ ] 5.2 (Con visto bueno explícito) Release a `main`. Verificar en https://gycmar.netlify.app filtros, orden, paginación y buscador del hero, y que la conversión use la UF del día de findic.cl.
+- [x] 5.2 (Con visto bueno explícito) Release a `main`. Verificar en https://gycmar.netlify.app filtros, orden, paginación y buscador del hero, y que la conversión use la UF del día de findic.cl.
 
-Avance (2026-11-19): el usuario agregó `UF_RESPALDO` en Netlify (5.1). Release PR #19 (`6b25aba`). En producción: buscador en el inicio; `/propiedades` responde 200 con filtros, `rango`, página fuera de rango y valores inválidos, con el formulario en el HTML (sin fragmentos ocultos). Producción tiene solo un borrador: falta que el usuario pruebe los resultados con propiedades publicadas (idealmente una en UF y otra en pesos) para cerrar 5.2.
+Avance (2026-11-19): el usuario agregó `UF_RESPALDO` en Netlify (5.1). Release PR #19 (`6b25aba`). En producción: buscador en el inicio; `/propiedades` responde 200 con filtros, `rango`, página fuera de rango y valores inválidos, con el formulario en el HTML (sin fragmentos ocultos). Producción tiene solo un borrador: el usuario confirmó los resultados con propiedades publicadas en UF y en pesos (5.2).
 
 ## Workflow follow-up
 
