@@ -24,7 +24,7 @@
 ## 4. Documentación y PR
 
 - [x] 4.1 README: sitio público, `src/contenido/sitio.ts`, variables de contacto, caché del catálogo. Verificar leyendo el README contra el código.
-- [ ] 4.2 Commit gitmoji y PR de `feat/sitio-publico` a `develop`. Verificar que `build` y `rls` terminan en verde.
+- [x] 4.2 Commit gitmoji y PR de `feat/sitio-publico` a `develop`. Verificar que `build` y `rls` terminan en verde.
 
 ## 5. Producción
 
