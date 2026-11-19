@@ -1,6 +1,10 @@
-# Netlify detecta Next.js y usa su adaptador (ISR y revalidatePath incluidos).
+# Adaptador de Next.js explícito: sin él, Netlify publicó la raíz del repo (0 archivos, 0 funciones).
 [build]
   command = "npm run build"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "24"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
