@@ -55,6 +55,14 @@ lo mismo que el público.
   Next cachea además cada `fetch` en `.next/cache/fetch-cache`, sin la etiqueta y entre builds.
 - Datos cargados directo en la base (sin el panel) no aparecen hasta la siguiente invalidación o
   hasta 5 minutos después.
+- **Búsqueda** (`/propiedades`): filtros en la URL (`operacion`, `tipo`, `comuna`, `sector`, `desde`,
+  `hasta`, `moneda`, `dormitorios`, `banos`, `disponibles=1`, `orden`, `pagina`; el buscador del inicio
+  envía `rango=operacion:MONEDA:desde:hasta`). Lógica en `src/lib/propiedades/filtros.ts`. La página
+  se genera completa en cada visita (`instant = false`, sin `<Suspense>`) para que los filtros funcionen
+  sin JavaScript. Rangos del buscador en `src/contenido/sitio.ts`.
+- **UF del día** (`src/lib/uf/`): findic.cl, cacheada un día (perfil `uf`); si falla, el último valor
+  bueno hasta 7 días, luego `UF_RESPALDO`, luego comparación solo en la misma moneda. En pruebas,
+  `UF_FUENTE=ninguna` + `UF_RESPALDO=40000`.
 - Fotos con `next/image` (`images.remotePatterns` desde `NEXT_PUBLIC_SUPABASE_URL`; en Netlify, su
   CDN de imágenes).
 

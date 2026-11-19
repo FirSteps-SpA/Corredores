@@ -53,3 +53,26 @@ export const hablamos = {
   titulo: "¿Hablamos?",
   texto: "Estamos aquí para resolver tus dudas y acompañarte en cada paso.",
 };
+
+// Rangos del buscador del inicio. valor: "operacion:MONEDA:desde:hasta" (hasta vacío = sin tope).
+// PROVISORIO: ajustar con la corredora según su catálogo.
+export const rangosBuscador = [
+  {
+    grupo: "Venta",
+    opciones: [
+      { valor: "venta:UF:0:3000", texto: "Hasta UF 3.000" },
+      { valor: "venta:UF:3000:5000", texto: "UF 3.000 – 5.000" },
+      { valor: "venta:UF:5000:8000", texto: "UF 5.000 – 8.000" },
+      { valor: "venta:UF:8000:", texto: "Más de UF 8.000" },
+    ],
+  },
+  {
+    grupo: "Arriendo",
+    opciones: [
+      { valor: "arriendo:CLP:0:400000", texto: "Hasta $400.000" },
+      { valor: "arriendo:CLP:400000:700000", texto: "$400.000 – $700.000" },
+      { valor: "arriendo:CLP:700000:1000000", texto: "$700.000 – $1.000.000" },
+      { valor: "arriendo:CLP:1000000:", texto: "Más de $1.000.000" },
+    ],
+  },
+];

@@ -39,6 +39,9 @@ jobs:
       NEXT_PUBLIC_WHATSAPP: "56900000000"
       NEXT_PUBLIC_INSTAGRAM: gycmar_prueba
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      # UF fija y sin consultar findic.cl: resultados de búsqueda deterministas (spec 6).
+      UF_FUENTE: ninguna
+      UF_RESPALDO: "40000"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
