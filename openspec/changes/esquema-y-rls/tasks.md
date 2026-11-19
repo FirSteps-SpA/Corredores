@@ -26,7 +26,7 @@
 ## 6. Documentación y PR
 
 - [x] 6.1 Actualizar el README (migraciones, `db reset`, `db:types`, cómo dar de alta un admin con SQL) y el comentario de cabecera de `scripts/test-rls.mjs`. Verificar que las instrucciones funcionan desde `supabase db reset`.
-- [ ] 6.2 Commit gitmoji y PR de `feat/esquema-y-rls` a `develop`. Verificar que `build` y `rls` terminan en verde.
+- [x] 6.2 Commit gitmoji y PR de `feat/esquema-y-rls` a `develop`. Verificar que `build` y `rls` terminan en verde.
 
 ## 7. Producción
 
