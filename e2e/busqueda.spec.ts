@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, sinInternet, test } from "./fixtures";
 import { admin, borrarCuenta, crearCuenta, crearPropiedad, iniciarSesion, limpiarPropiedades, run } from "./supabase";
 
 // Spec 6 (busqueda-y-filtros). La app corre con UF_FUENTE=ninguna y UF_RESPALDO=40000: la UF
@@ -118,6 +119,7 @@ test("buscador del inicio", async ({ page }) => {
 
 test("filtros sin JavaScript", async ({ browser }) => {
   const contexto = await browser.newContext({ javaScriptEnabled: false });
+  await sinInternet(contexto);
   const page = await contexto.newPage();
   await page.goto(url({}));
   const form = page.getByRole("form", { name: "Filtros" });

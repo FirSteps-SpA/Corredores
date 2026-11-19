@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { API, admin, borrarCuenta, crearCuenta, crearPropiedad, fotosDe, iniciarSesion, limpiarPropiedades } from "./supabase";
 
 // Spec 4 (fotos-propiedades): subida comprimida, orden, portada, borrado y acceso solo del admin.

@@ -66,6 +66,10 @@ lo mismo que el público.
   JSON-LD `RealEstateAgent`; imagen de marca `public/compartir.jpg` (1200 × 630); canónicas (el
   listado con filtros apunta a `/propiedades`); `src/app/sitemap.ts` (fichas visibles, se invalida con
   el panel) y `src/app/robots.ts` (excluye `/admin`).
+- **Mapas** (`src/lib/mapa.ts`, Leaflet + teselas de OpenStreetMap con atribución): en el panel,
+  marcar la ubicación (clic, arrastre o "Ubicar por dirección" con Nominatim); en la ficha, marcador
+  exacto o círculo de 500 m, cargado al acercarse a la sección. Playwright no sale a internet: teselas
+  y Nominatim se responden en `e2e/fixtures.ts`.
 - **UF del día** (`src/lib/uf/`): findic.cl, cacheada un día (perfil `uf`); si falla, el último valor
   bueno hasta 7 días, luego `UF_RESPALDO`, luego comparación solo en la misma moneda. En pruebas,
   `UF_FUENTE=ninguna` + `UF_RESPALDO=40000`.
@@ -133,6 +137,11 @@ curl -X PUT "$SUPABASE_URL/auth/v1/admin/users/<user_id>" \
 - Tablas: `propiedades`, `propiedad_fotos` y `admins`. El público (y cualquier cuenta que no sea admin)
   ve lo que no está en `borrador`; solo las cuentas en `admins` escriben (`es_admin()` en las
   policies).
+- **Ubicación privada** (spec 8): el sitio público lee la vista `propiedades_publicas` (sin borradores;
+  `direccion`, `lat` y `lng` exactas solo si `mostrar_direccion`; si no, dirección nula y un punto
+  desplazado hasta ~400 m con una sal secreta en el esquema `privado`). La clave publishable (`anon`) no
+  puede leer `direccion`, `lat` ni `lng` de la tabla. El advisor de Supabase marca la vista como
+  "security definer view": es intencional.
 - Bucket `propiedades` (público, solo JPEG/PNG/WebP de hasta 10 MB): las fotos se sirven por URL
   pública; solo el admin sube, borra o lista. Rutas `<propiedad_id>/<uuid>.<ext>`.
 - La app usa solo la clave **publishable**; los permisos los da RLS. La clave secreta no va en la app

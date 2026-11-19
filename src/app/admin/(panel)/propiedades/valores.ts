@@ -22,6 +22,8 @@ export function valoresDe(p: Propiedad): Valores {
   return {
     ...Object.fromEntries(textos.map((c) => [c, p[c] ?? ""])),
     ...Object.fromEntries(numeros.map((c) => [c, numeroCampo(p[c])])),
+    lat: p.lat?.toString() ?? "",
+    lng: p.lng?.toString() ?? "",
     caracteristicas: sugeridas,
     caracteristicas_otras: otras.join(", "),
     mostrar_direccion: p.mostrar_direccion ? "on" : "",

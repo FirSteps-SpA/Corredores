@@ -8,6 +8,7 @@ import { disponible } from "@/lib/propiedades/orden";
 import { fichaPublica, slugsPublicos } from "@/lib/propiedades/publico";
 import { descripcionFicha, imagenCompartir, jsonLdFicha } from "@/lib/seo";
 import { JsonLd } from "../../_componentes/json-ld";
+import { MapaFicha } from "../../_componentes/mapa-ficha";
 import { GaleriaFicha } from "../../_componentes/galeria";
 import { IconoAuto, IconoBano, IconoCama, IconoSuperficie, IconoUbicacion } from "../../_componentes/iconos";
 import { FondoMarca } from "../../_componentes/marcador";
@@ -144,6 +145,18 @@ export default async function Ficha({ params }: PageProps<"/propiedades/[slug]">
             </section>
           )}
         </div>
+      )}
+
+      {p.lat !== null && p.lng !== null && (
+        <section className="mt-12" aria-labelledby="ubicacion">
+          <h2 id="ubicacion" className="mb-3 font-serif text-2xl text-tinta">
+            Ubicación
+          </h2>
+          <MapaFicha lat={p.lat} lng={p.lng} exacta={p.mostrar_direccion} />
+          <p className="mt-2 text-sm text-tinta/70">
+            {p.mostrar_direccion ? ubicacion : `Ubicación aproximada · ${[p.sector, p.comuna].filter(Boolean).join(", ")}`}
+          </p>
+        </section>
       )}
     </article>
   );
