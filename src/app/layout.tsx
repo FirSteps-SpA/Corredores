@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "GyCmar Propiedades Iquique",
+  title: { default: "GyCmar Propiedades Iquique", template: "%s · GyCmar Propiedades Iquique" },
   description:
     "Corredora de propiedades en Iquique: compra, venta y arriendo de casas y departamentos.",
 };

@@ -53,6 +53,28 @@ export async function limpiarPropiedades() {
   }
 }
 
+// Sube una foto JPEG generada en el navegador y la registra en propiedad_fotos.
+export async function subirFoto(page: Page, propiedadId: string, orden: number, color = "#2a6f97") {
+  const dataUrl = await page.evaluate((c) => {
+    const k = document.createElement("canvas");
+    k.width = 1600;
+    k.height = 1200;
+    const g = k.getContext("2d")!;
+    g.fillStyle = c;
+    g.fillRect(0, 0, 1600, 1200);
+    return k.toDataURL("image/jpeg", 0.8);
+  }, color);
+  const path = `${propiedadId}/${randomUUID()}.jpg`;
+  const res = await fetch(`${API}/storage/v1/object/propiedades/${path}`, {
+    method: "POST",
+    headers: { apikey: SECRET_KEY, "Content-Type": "image/jpeg" },
+    body: Buffer.from(dataUrl.split(",")[1], "base64"),
+  });
+  if (res.status !== 200) throw new Error(`subir foto: ${res.status}`);
+  await admin("POST", "/rest/v1/propiedad_fotos", { propiedad_id: propiedadId, path, orden });
+  return path;
+}
+
 export async function fotosDe(propiedadId: string): Promise<{ id: string; path: string; orden: number }[]> {
   const r = await admin("GET", `/rest/v1/propiedad_fotos?select=id,path,orden&propiedad_id=eq.${propiedadId}&order=orden,id`);
   return r.data;

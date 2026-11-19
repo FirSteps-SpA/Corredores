@@ -27,7 +27,21 @@ async function Contenido({ params, searchParams }: PageProps<"/admin/propiedades
       <Link href="/admin" className="text-sm text-marino underline underline-offset-4">
         ← Propiedades
       </Link>
-      <h1 className="font-serif text-4xl text-marino">{propiedad.titulo}</h1>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <h1 className="font-serif text-4xl text-marino">{propiedad.titulo}</h1>
+        {propiedad.estado === "borrador" ? (
+          <span className="text-sm text-tinta/60">Visible en el sitio cuando la publiques</span>
+        ) : (
+          <a
+            href={`/propiedades/${propiedad.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-marino underline underline-offset-4"
+          >
+            Ver en el sitio ↗
+          </a>
+        )}
+      </div>
       {creada && (
         <p role="status" className="rounded-md bg-green-50 px-4 py-2 text-sm text-green-800">
           Propiedad creada. Agrega sus fotos.
