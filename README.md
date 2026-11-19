@@ -24,8 +24,20 @@ supabase status         # copia la "Publishable key" a NEXT_PUBLIC_SUPABASE_PUBL
 npm run dev             # http://localhost:3000
 ```
 
+`supabase start` aplica las migraciones de `supabase/migrations/`; `supabase db reset` borra la base
+local y las vuelve a aplicar.
+
 El registro público está desactivado. Para tener una cuenta local, créala en Studio
-(`supabase start` sin `-x studio`, Authentication › Add user, con **Auto Confirm User**).
+(`supabase start` sin `-x studio`, Authentication › Add user, con **Auto Confirm User**). Para que sea
+admin (puede escribir propiedades y fotos), regístrala en `admins` desde el SQL Editor:
+
+```sql
+insert into public.admins (user_id)
+select id from auth.users where email = 'corredora@ejemplo.cl';
+```
+
+En producción se hace igual, en el SQL Editor del panel. Las cuentas que no estén en `admins` solo ven
+lo mismo que el público.
 
 ## Scripts
 
@@ -35,14 +47,20 @@ El registro público está desactivado. Para tener una cuenta local, créala en 
 | `npm run lint` | ESLint |
 | `npm run typecheck` | Genera los tipos de rutas (`next typegen`) y corre `tsc --noEmit` |
 | `npm run build` | Build de producción |
-| `npm run test:rls` | Controles de seguridad contra Supabase local (registro cerrado, contraseñas; luego RLS) |
-| `npm run test:rls -- --remoto` | Lo mismo contra producción, solo lo que no necesita clave secreta. Usa `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` del entorno |
+| `npm run test:rls` | Controles de seguridad contra Supabase local: registro cerrado, contraseñas, y acceso a propiedades, fotos y Storage como público, usuario no admin y admin |
+| `npm run test:rls -- --remoto` | Contra producción, solo lo que no necesita clave secreta (registro cerrado). Usa `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` del entorno |
+| `npm run db:types` | Regenera `src/lib/supabase/database.types.ts` desde Supabase local. Correrlo tras cada migración |
 
 ## Supabase
 
 - Proyecto de producción: `ioslqobvauapjpwhkgts` (`sa-east-1`). Vincular con
   `supabase link --project-ref ioslqobvauapjpwhkgts`.
 - Esquema solo por migraciones en `supabase/migrations/` (`supabase db push`). Nada a mano en el panel.
+- Tablas: `propiedades`, `propiedad_fotos` y `admins`. El público (y cualquier cuenta que no sea admin)
+  ve lo que no está en `borrador`; solo las cuentas en `admins` escriben (`es_admin()` en las
+  policies).
+- Bucket `propiedades` (público, solo JPEG/PNG/WebP de hasta 10 MB): las fotos se sirven por URL
+  pública; solo el admin sube, borra o lista. Rutas `<propiedad_id>/<uuid>.<ext>`.
 - La app usa solo la clave **publishable**; los permisos los da RLS. La clave secreta no va en la app
   ni en Netlify.
 - `supabase/config.toml` replica los ajustes de Auth de producción (registro cerrado, contraseñas de
