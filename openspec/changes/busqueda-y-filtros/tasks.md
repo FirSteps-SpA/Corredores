@@ -18,7 +18,7 @@
 ## 4. Documentación y PR
 
 - [x] 4.1 README: filtros, parámetros de la URL, UF (findic.cl, respaldo). Verificar leyendo el README contra el código.
-- [ ] 4.2 Commit gitmoji y PR de `feat/busqueda-y-filtros` a `develop`. Verificar que `build` y `rls` terminan en verde.
+- [x] 4.2 Commit gitmoji y PR de `feat/busqueda-y-filtros` a `develop`. Verificar que `build` y `rls` terminan en verde.
 
 ## 5. Producción
 
