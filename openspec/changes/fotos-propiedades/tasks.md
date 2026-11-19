@@ -25,7 +25,7 @@
 ## 5. Documentación y PR
 
 - [x] 5.1 README: fotos (compresión, subida directa, límite), `test:e2e` y cómo correrlo en local. Verificar que `lint`, `typecheck`, `test`, `build`, `test:rls`, `test:panel` y `test:e2e` pasan.
-- [ ] 5.2 Commit gitmoji y PR de `feat/fotos-propiedades` a `develop`. Verificar que `build` y `rls` terminan en verde.
+- [x] 5.2 Commit gitmoji y PR de `feat/fotos-propiedades` a `develop`. Verificar que `build` y `rls` terminan en verde.
 
 ## 6. Producción
 
