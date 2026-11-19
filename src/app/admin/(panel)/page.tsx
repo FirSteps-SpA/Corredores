@@ -129,7 +129,16 @@ async function Listado({ searchParams }: Pick<PageProps<"/admin">, "searchParams
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">{precioTexto(p.precio, p.moneda as "UF" | "CLP")}</td>
-                  <AccionesFila id={p.id} titulo={p.titulo} estado={p.estado as Estado} destacada={p.destacada} />
+                  {/* key con el estado: React 19 restablece el formulario tras la acción y el <select>
+                      volvía al estado anterior aunque el cambio estaba guardado. Al cambiar el
+                      estado en el servidor, la fila se vuelve a crear con el valor nuevo. */}
+                  <AccionesFila
+                    key={`${p.estado}-${p.destacada}`}
+                    id={p.id}
+                    titulo={p.titulo}
+                    estado={p.estado as Estado}
+                    destacada={p.destacada}
+                  />
                 </tr>
               ))}
             </tbody>
