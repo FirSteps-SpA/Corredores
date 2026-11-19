@@ -28,9 +28,9 @@
 ## 6. Producción
 
 - [x] 6.1 (Con visto bueno explícito y el correo de la corredora) Release a `main` y verificar que https://gycmar.netlify.app/admin redirige al login.
-- [ ] 6.2 (Con visto bueno explícito) Crear la cuenta de la corredora en el panel de Supabase con Auto Confirm y contraseña temporal, y registrar su fila en `admins`. Verificar entrando a https://gycmar.netlify.app/admin con esa cuenta y que `es_admin()` la reconoce.
+- [x] 6.2 (Con visto bueno explícito) Crear la cuenta de la corredora en el panel de Supabase con Auto Confirm y contraseña temporal, y registrar su fila en `admins`. Verificar entrando a https://gycmar.netlify.app/admin con esa cuenta y que `es_admin()` la reconoce.
 
-Avance (2026-11-19): release PR #7 (`4ab93cf`); en Netlify `/admin` sin sesión → 307 a `/admin/login?next=%2Fadmin`, login 200 con `noindex`. La cuenta `gycmarpropiedadesiquique@gmail.com` la creó el usuario en el panel (confirmada); su fila en `admins` se registró por SQL. Falta entrar con ella en producción para cerrar 6.2.
+Avance (2026-11-19): release PR #7 (`4ab93cf`); en Netlify `/admin` sin sesión → 307 a `/admin/login?next=%2Fadmin`, login 200 con `noindex`. La cuenta `gycmarpropiedadesiquique@gmail.com` la creó el usuario en el panel (confirmada); su fila en `admins` se registró por SQL. El usuario confirmó el ingreso al panel en producción con esa cuenta (6.2).
 
 ## Workflow follow-up
 
