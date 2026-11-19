@@ -150,6 +150,9 @@ test("lo que la corredora publica o retira en el panel se ve en el sitio", async
   await panel.goto("/admin");
   await panel.getByLabel(`Estado de ${nombre}`).selectOption("publicada");
   await expect.poll(async () => (await admin("GET", `/rest/v1/propiedades?select=estado&id=eq.${ids.Borrador}`)).data[0].estado).toBe("publicada");
+  // El panel sigue mostrando el estado nuevo (React 19 restablecía el <select> al anterior).
+  await panel.waitForLoadState("networkidle");
+  await expect(panel.getByLabel(`Estado de ${nombre}`)).toHaveValue("publicada");
   await page.goto("/propiedades");
   await expect(page.locator("article h3", { hasText: nombre })).toBeVisible();
   // Su ficha no se generó en el build: se genera en esta primera visita (en Netlify, con el
@@ -161,6 +164,8 @@ test("lo que la corredora publica o retira en el panel se ve en el sitio", async
   await panel.goto("/admin");
   await panel.getByLabel(`Estado de ${nombre}`).selectOption("borrador");
   await expect.poll(async () => (await admin("GET", `/rest/v1/propiedades?select=estado&id=eq.${ids.Borrador}`)).data[0].estado).toBe("borrador");
+  await panel.waitForLoadState("networkidle");
+  await expect(panel.getByLabel(`Estado de ${nombre}`)).toHaveValue("borrador");
   await page.goto(`/propiedades/${slug("Borrador")}`);
   await expect(page.getByRole("heading", { name: "Propiedad no encontrada" })).toBeVisible();
 });
