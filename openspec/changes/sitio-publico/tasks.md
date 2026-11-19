@@ -31,7 +31,7 @@
 - [ ] 5.1 (Usuario) En Netlify: confirmar `NEXT_PUBLIC_WHATSAPP` y agregar `NEXT_PUBLIC_SITE_URL` (y correo e Instagram si existen). Verificar en la configuración del sitio.
 - [ ] 5.2 (Con visto bueno explícito) Release a `main`. Verificar en https://gycmar.netlify.app: inicio, listado, ficha con fotos (imágenes por `/_next/image`), WhatsApp con mensaje correcto, y que publicar y despublicar una propiedad de prueba desde el panel se refleja en el sitio (anotar si fue inmediato o tardó, por el riesgo de `updateTag` en Netlify).
 
-Avance (2026-11-19): release PR #13 (`c4b0c69`). En producción las fichas de slugs que no estaban en el build respondían 500 (el App Shell de Next 16.3 no funciona en Netlify); corregido con `ensureStatic = "navigation"` (PR #14, release PR #15 `9cfad3a`): ahora responden 404 si no existen. Falta que el usuario publique una propiedad desde el panel para verificar en Netlify la ficha nueva (200), el WhatsApp, `/_next/image` y si el cambio se refleja al instante (`updateTag`) o tarda hasta 5 minutos.
+Avance (2026-11-19): release PR #13 (`c4b0c69`). En producción las fichas de slugs que no estaban en el build respondían 500 (el App Shell de Next 16.3 no funciona en Netlify); corregido con `ensureStatic = "navigation"` (PR #14, release PR #15 `9cfad3a`): ahora responden 404 si no existen. El usuario publicó una propiedad desde el panel: apareció **al instante** en el sitio (`updateTag` funciona en Netlify). Reportó que el selector de estado del panel volvía al estado anterior tras cambiarlo (React 19 restablece el formulario): corregido con `key` en la fila (PR #16, release PR #17 `02f75d5`), con test de regresión. Falta su confirmación de esa corrección para cerrar 5.2.
 
 ## Workflow follow-up
 
