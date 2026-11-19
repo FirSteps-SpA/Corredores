@@ -1,9 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import type { Database } from "./database.types";
 
 // Cliente para Server Components, Server Actions y Route Handlers, con la sesión de las cookies.
 export async function createClient() {
+  // Siempre en el request: el cliente usa Date.now() al leer la sesión, lo que Next no admite
+  // durante el prerender (cacheComponents), aunque haya cookies disponibles.
+  await connection();
   const cookieStore = await cookies();
 
   return createServerClient<Database>(

@@ -26,14 +26,16 @@ jobs:
       - run: npm run build
 
   rls:
-    # Levanta Supabase local y verifica registro cerrado y contraseñas (luego, RLS)
-    # con scripts/test-rls.mjs. No usa ningún proyecto remoto.
+    # Levanta Supabase local y corre scripts/test-rls.mjs (Auth, RLS y Storage) y, con la app
+    # construida y corriendo, scripts/test-panel.mjs (panel /admin). No usa ningún proyecto remoto.
+    # El nombre `rls` lo exige la protección de `main`.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
       # Versión fija: con `latest` la acción consulta la API de GitHub para
       # resolverla y a veces falla por límite de tasa ("rate limit exceeded").
       - uses: supabase/setup-cli@v1
@@ -42,3 +44,20 @@ jobs:
       - run: supabase --version
       - run: supabase start -x realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
       - run: npm run test:rls
+      - run: npm ci
+      # La app apunta al Supabase local del job.
+      - name: Variables de Supabase local
+        run: |
+          eval "$(supabase status -o env)"
+          echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY" >> "$GITHUB_ENV"
+      - run: npm run build
+      - name: Levantar la app
+        run: |
+          npm start > next.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf -o /dev/null http://localhost:3000/ && exit 0; sleep 1; done
+          cat next.log; exit 1
+      - run: npm run test:panel
+      - name: Log de la app
+        if: failure()
+        run: cat next.log

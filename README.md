@@ -39,6 +39,31 @@ select id from auth.users where email = 'corredora@ejemplo.cl';
 En producción se hace igual, en el SQL Editor del panel. Las cuentas que no estén en `admins` solo ven
 lo mismo que el público.
 
+## Panel (`/admin`)
+
+- `/admin/login`: correo y contraseña (sin magic link ni recuperación por correo hasta tener SMTP con
+  dominio). `/admin`: inicio del panel. `/admin/cuenta`: cambio de contraseña (pide la actual).
+- `src/proxy.ts` refresca la sesión en `/admin/*` y redirige al login si no hay sesión; es solo un
+  chequeo rápido. **Cada página y server action del panel llama a `exigirAdmin()`**
+  (`src/lib/auth.ts`); no basta con el layout, porque Next envía la página al navegador aunque el
+  layout no la muestre. Las cuentas que no son admin van a `/admin/sin-acceso`.
+
+**Alta de la corredora** (producción): en el panel de Supabase, Authentication › Add user, con
+**Auto Confirm User** y una contraseña temporal (`openssl rand -base64 18`); registrar su fila en
+`admins` (SQL de arriba) y entregarle la contraseña por un canal distinto del correo. Ella la cambia en
+`/admin/cuenta`.
+
+**Si olvida su contraseña** (no hay recuperación por correo hasta tener SMTP): asignarle una temporal con
+la API de administración de Auth y la clave secreta del proyecto (panel › Project Settings › API Keys),
+desde el equipo y nunca desde la app; ella la cambia al entrar.
+
+```bash
+TEMP=$(openssl rand -base64 18); echo "$TEMP"   # la que se le entrega
+curl -X PUT "$SUPABASE_URL/auth/v1/admin/users/<user_id>" \
+  -H "apikey: $SECRET_KEY" -H "Content-Type: application/json" \
+  -d "{\"password\": \"$TEMP\"}"
+```
+
 ## Scripts
 
 | Script | Qué hace |
@@ -49,6 +74,7 @@ lo mismo que el público.
 | `npm run build` | Build de producción |
 | `npm run test:rls` | Controles de seguridad contra Supabase local: registro cerrado, contraseñas, y acceso a propiedades, fotos y Storage como público, usuario no admin y admin |
 | `npm run test:rls -- --remoto` | Contra producción, solo lo que no necesita clave secreta (registro cerrado). Usa `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` del entorno |
+| `npm run test:panel` | Controles del panel contra la app corriendo (`npm run build && npm start`) y Supabase local: redirecciones, acceso por rol, noindex y formularios |
 | `npm run db:types` | Regenera `src/lib/supabase/database.types.ts` desde Supabase local. Correrlo tras cada migración |
 
 ## Supabase
