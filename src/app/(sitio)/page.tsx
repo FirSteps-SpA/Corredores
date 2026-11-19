@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { hablamos, hero, sobreNosotros, valores } from "@/contenido/sitio";
-import { destacadasInicio } from "@/lib/propiedades/publico";
+import { opcionesDe } from "@/lib/propiedades/filtros";
+import { destacadasInicio, listadoPublico } from "@/lib/propiedades/publico";
+import { Buscador } from "./_componentes/buscador";
 import { IconoFlecha, IconoValor } from "./_componentes/iconos";
 import { FondoMarca } from "./_componentes/marcador";
 import { TarjetaPropiedad } from "./_componentes/tarjeta";
@@ -9,7 +11,8 @@ import { Rotulo } from "./_componentes/titulo-seccion";
 import { BotonWhatsApp } from "./_componentes/whatsapp";
 
 export default async function Inicio() {
-  const destacadas = await destacadasInicio();
+  const [destacadas, catalogo] = await Promise.all([destacadasInicio(), listadoPublico()]);
+  const { comunas } = opcionesDe(catalogo);
   return (
     <>
       <section className="relative">
@@ -35,6 +38,11 @@ export default async function Inicio() {
           </Link>
         </div>
       </section>
+
+      {/* Buscador flotante sobre el borde inferior del hero, como en el mockup. */}
+      <div className="relative z-10 -mt-10 px-5 sm:-mt-8">
+        <Buscador comunas={comunas} />
+      </div>
 
       {destacadas.length > 0 && (
         <section className="mx-auto max-w-6xl px-5 py-16" aria-labelledby="destacadas">

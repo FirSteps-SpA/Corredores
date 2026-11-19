@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
   // 5 minutos por si la invalidación no llegara (ver design de la spec 5).
   cacheLife: {
     catalogo: { stale: 60, revalidate: 300, expire: 3600 },
+    // Valor de la UF (spec 6): una vez al día; si falla, el último bueno hasta 7 días.
+    uf: { stale: 3600, revalidate: 86400, expire: 604800 },
   },
   images: {
     remotePatterns: [
