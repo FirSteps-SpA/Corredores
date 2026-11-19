@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Valores de relleno: el build necesita poder construir el cliente Supabase.
+    # No se conecta a ningún proyecto real.
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:55321
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+
+  rls:
+    # Levanta Supabase local y verifica registro cerrado y contraseñas (luego, RLS)
+    # con scripts/test-rls.mjs. No usa ningún proyecto remoto.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      # Versión fija: con `latest` la acción consulta la API de GitHub para
+      # resolverla y a veces falla por límite de tasa ("rate limit exceeded").
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.2.0
+      - run: supabase --version
+      - run: supabase start -x realtime,imgproxy,mailpit,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+      - run: npm run test:rls
