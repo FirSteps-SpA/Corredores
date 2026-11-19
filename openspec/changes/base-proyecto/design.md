@@ -66,10 +66,15 @@
     y ya se usa con DentdeLion. `netlify.toml` con `npm run build`, Node 24 y el adaptador de Next.js que
     Netlify detecta solo (soporta ISR y `revalidatePath`). Rama de producción `main`; deploy previews y
     branch deploys desactivados (no hay proyecto Supabase de desarrollo en la nube).
-11. **Sentry opcional por entorno**: `@sentry/nextjs` con `instrumentation.ts` e
-    `instrumentation-client.ts`; se inicializa solo si existe `NEXT_PUBLIC_SENTRY_DSN`, y sube source maps
-    solo si existe `SENTRY_AUTH_TOKEN`. Sin Replay ni datos de usuario (como VetApp). Así el build de CI
-    y el desarrollo local no dependen de Sentry.
+11. **Sentry opcional por entorno**: proyecto `first-steps/corredores` (javascript-nextjs).
+    `@sentry/nextjs` con `instrumentation.ts`, `instrumentation-client.ts` y `global-error.tsx`; opciones
+    comunes en `sentry.opciones.ts`. Solo envía eventos en builds de producción con
+    `NEXT_PUBLIC_SENTRY_DSN`; sube source maps solo con `SENTRY_AUTH_TOKEN`. Así el build de CI y el
+    desarrollo local no dependen de Sentry. Errores, tracing (100 % con
+    `NEXT_PUBLIC_SENTRY_ENVIRONMENT=local`, 10 % en producción), logs (activos por defecto en el SDK v11,
+    más `console.warn/error` del servidor) y Session Replay **solo de sesiones con error**, como VetApp.
+    Sin datos de usuario (`dataCollection`). Verificado el 2026-11-19 con un error de prueba desde
+    `next start` local (issue `CORREDORES-1`).
 12. **Página provisional** en `src/app/page.tsx`: fondo crema, logo vertical, "Sitio en construcción" y
     botón de WhatsApp solo si existe `NEXT_PUBLIC_WHATSAPP` (número de la corredora, pendiente). `lang`,
     `title` y `description` en `layout.tsx`.

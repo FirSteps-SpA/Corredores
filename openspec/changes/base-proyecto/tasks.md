@@ -23,6 +23,7 @@
 ## 4. Sentry
 
 - [x] 4.1 Instalar `@sentry/nextjs` y configurar `instrumentation.ts`, `instrumentation-client.ts` y `next.config.ts`: inicializar solo con `NEXT_PUBLIC_SENTRY_DSN`, subir source maps solo con `SENTRY_AUTH_TOKEN`, sin Replay ni datos de usuario. Verificar que `npm run build` pasa sin ninguna variable de Sentry.
+- [x] 4.2 Crear el proyecto `first-steps/corredores` en Sentry, agregar logs, Replay solo con error y `global-error.tsx`. Verificar con un error de prueba desde `next start` local que llega a Sentry (`CORREDORES-1`) y borrar la ruta de prueba.
 
 ## 5. CI
 
