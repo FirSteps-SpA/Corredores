@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { SITIO_URL, mensajePropiedad } from "@/lib/contacto";
 import { precioTexto } from "@/lib/propiedades/formato";
 import { ESTADOS, OPERACIONES, TIPOS, type Estado, type Moneda, type Operacion, type Tipo } from "@/lib/propiedades/opciones";
@@ -29,15 +28,13 @@ export async function generateMetadata({ params }: PageProps<"/propiedades/[slug
   };
 }
 
-export default function Ficha({ params }: PageProps<"/propiedades/[slug]">) {
-  return (
-    <Suspense fallback={<div className="mx-auto min-h-[70vh] max-w-6xl px-5 py-10" />}>
-      <Contenido params={params} />
-    </Suspense>
-  );
-}
+// Un slug que no estaba en el build (propiedad publicada después) se genera completo en la primera
+// visita, sin App Shell: desde Next 16.3 el App Shell para params nuevos es el comportamiento por
+// defecto y en Netlify respondía 500 para todo slug nuevo. 'navigation' además exige que la ficha
+// sea estática (solo datos con "use cache"), y notFound() responde 404 de verdad.
+export const ensureStatic = "navigation";
 
-async function Contenido({ params }: Pick<PageProps<"/propiedades/[slug]">, "params">) {
+export default async function Ficha({ params }: PageProps<"/propiedades/[slug]">) {
   const { slug } = await params;
   const p = await fichaPublica(slug);
   if (!p) notFound();
