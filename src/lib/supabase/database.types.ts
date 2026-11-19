@@ -55,6 +55,12 @@ export type Database = {
 isOneToOne: false
       referencedRelation: "propiedades"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "propiedad_fotos_propiedad_id_fkey"
+      columns: ["propiedad_id"]
+isOneToOne: false
+      referencedRelation: "propiedades_publicas"
+      referencedColumns: ["id"]
     }
                   ]
                 },"propiedades": {
@@ -74,7 +80,15 @@ isOneToOne: false
                 }
           }
           Views: {
-            [_ in never]: never
+            "propiedades_publicas": {
+                  Row: {
+                    "banos": number | null,"bodegas": number | null,"caracteristicas": (string)[] | null,"codigo": string | null,"comuna": string | null,"created_at": string | null,"descripcion": string | null,"destacada": boolean | null,"direccion": string | null,"dormitorios": number | null,"estacionamientos": number | null,"estado": string | null,"gastos_comunes": number | null,"id": string | null,"lat": number | null,"lng": number | null,"m2_totales": number | null,"m2_utiles": number | null,"moneda": string | null,"mostrar_direccion": boolean | null,"operacion": string | null,"precio": number | null,"region": string | null,"sector": string | null,"slug": string | null,"tipo": string | null,"titulo": string | null,"updated_at": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                }
           }
           Functions: {
             "es_admin":

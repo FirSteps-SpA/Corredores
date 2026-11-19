@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { expect, type Browser, type Page } from "@playwright/test";
+import { sinInternet } from "./fixtures";
 
 // Acceso a Supabase LOCAL con la clave secreta para preparar y limpiar datos de prueba.
 const out = execFileSync("supabase", ["status", "-o", "json"], { encoding: "utf8" });
@@ -81,7 +82,9 @@ export async function fotosDe(propiedadId: string): Promise<{ id: string; path: 
 }
 
 export async function iniciarSesion(browser: Browser, email: string): Promise<Page> {
-  const page = await (await browser.newContext()).newPage();
+  const contexto = await browser.newContext();
+  await sinInternet(contexto);
+  const page = await contexto.newPage();
   await page.goto("/admin/login");
   await page.getByLabel("Correo").fill(email);
   await page.getByLabel("Contraseña").fill(PASSWORD);

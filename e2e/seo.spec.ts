@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { admin, borrarCuenta, crearCuenta, crearPropiedad, iniciarSesion, limpiarPropiedades, run, subirFoto } from "./supabase";
 
 // Spec 7 (seo-y-compartir). La app se construye con NEXT_PUBLIC_SITE_URL=http://localhost:3000 (CI),

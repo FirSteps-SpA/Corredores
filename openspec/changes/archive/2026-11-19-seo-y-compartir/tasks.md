@@ -23,7 +23,9 @@
 
 ## 5. Producción
 
-- [ ] 5.1 (Con visto bueno explícito) Release a `main`. Verificar `/sitemap.xml`, `/robots.txt` y metadatos con `curl`; (usuario) enviar por WhatsApp el enlace de una ficha publicada y ver la vista previa con foto.
+- [x] 5.1 (Con visto bueno explícito) Release a `main`. Verificar `/sitemap.xml`, `/robots.txt` y metadatos con `curl`; (usuario) enviar por WhatsApp el enlace de una ficha publicada y ver la vista previa con foto.
+
+Avance (2026-11-19): release PR #21 (`cad1717`). En producción: `/robots.txt` y `/sitemap.xml` correctos, inicio con imagen de marca (`/compartir.jpg` 200, 42 KB), canónica y JSON-LD. Sin propiedades publicadas en producción: el usuario publicó una y confirmó la vista previa en WhatsApp (5.1).
 
 ## Workflow follow-up
 

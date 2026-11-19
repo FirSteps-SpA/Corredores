@@ -25,6 +25,8 @@ type FichaSeo = {
   region: string | null;
   direccion: string | null;
   mostrar_direccion: boolean;
+  lat: number | null;
+  lng: number | null;
   dormitorios: number | null;
   banos: number | null;
   m2_utiles: number | null;
@@ -94,6 +96,8 @@ export function jsonLdFicha(p: FichaSeo) {
       ...(p.dormitorios !== null && { numberOfRooms: p.dormitorios }),
       ...(p.banos !== null && { numberOfBathroomsTotal: p.banos }),
       ...(superficie !== null && { floorSize: { "@type": "QuantitativeValue", value: superficie, unitCode: "MTK" } }),
+      // Coordenadas solo si la ubicación exacta es pública (spec 8).
+      ...(p.mostrar_direccion && p.lat !== null && p.lng !== null && { geo: { "@type": "GeoCoordinates", latitude: p.lat, longitude: p.lng } }),
       address: {
         "@type": "PostalAddress",
         ...(p.mostrar_direccion && p.direccion && { streetAddress: p.direccion }),
